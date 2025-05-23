@@ -1,0 +1,1 @@
+from . import user, course, chapter, part, category, registered_course
