@@ -13,7 +13,8 @@ def get_course(db: Session, course_id: int):
     return db.query(Course).filter(Course.course_id == course_id).first()
 
 def get_courses(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(Course).offset(skip).limit(limit).all()
+    # MSSQL requires an order_by when using offset/limit
+    return db.query(Course).order_by(Course.course_id).offset(skip).limit(limit).all()
 
 def update_course(db: Session, course_id: int, course: CourseUpdate):
     db_course = db.query(Course).filter(Course.course_id == course_id).first()

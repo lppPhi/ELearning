@@ -102,11 +102,13 @@ const progress = {
     }
 };
 
-export default {
-    auth,
-    courses,
-    categories,
-    chapters,
-    progress
-};
-// ...Thêm các hàm gọi API khác nếu cần
+// Lấy tất cả khoá học từ FastAPI
+async function fetchCourses() {
+    const res = await fetch(`${API_BASE}/courses/?skip=0&limit=100`);
+    if (!res.ok) throw new Error('Không thể lấy danh sách khoá học');
+    return res.json();
+}
+
+window.fetchCourses = fetchCourses;
+
+// Thêm các hàm gọi API khác nếu cần

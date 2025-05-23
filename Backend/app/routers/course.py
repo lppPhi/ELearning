@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app import crud, schemas
 from app.database import get_db
 from app.models.user import User  # Thêm dòng này
+from typing import List
 
 router = APIRouter()
 
@@ -33,3 +34,7 @@ def delete_course(course_id: int, db: Session = Depends(get_db)):
     if db_course is None:
         raise HTTPException(status_code=404, detail="Course not found")
     return crud.course.delete_course(db=db, course_id=course_id)
+
+@router.get("/", response_model=List[schemas.Course])
+def read_courses(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.course.get_courses(db, skip=skip, limit=limit)

@@ -33,29 +33,57 @@ function loadPage(page) {
 
 // Trang chủ: hiển thị khoá học phổ biến
 async function renderHome() {
-    const courses = await fetchCourses();
-    const container = document.getElementById('popular-courses');
-    if (!container) return;
-    container.innerHTML = courses.slice(0, 4).map(course => `
-        <div class="card course-card">
-            <img src="assets/logo.png" alt="Course" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">
-            <h3>${course.title}</h3>
-            <p>${course.description}</p>
-            <a class="btn" href="#course-detail?id=${course.id}">Xem chi tiết</a>
-        </div>
-    `).join('');
+    try {
+        const courses = await fetchCourses();
+        const container = document.getElementById('popular-courses');
+        if (!container) return;
+        if (!courses || courses.length === 0) {
+            container.innerHTML = '<div style="text-align:center;color:#888;">Chưa có khoá học nào.</div>';
+            return;
+        }
+        container.innerHTML = courses.slice(0, 4).map(course => `
+            <div class="card course-card">
+                <img src="assets/logo.png" alt="Course" style="width:100px;height:100px;object-fit:cover;border-radius:8px;">
+                <h3>${course.course_name}</h3>
+                <p>${course.description || ''}</p>
+                <div class="course-info">
+                    <span>Đánh giá: <b>${course.evaluate ?? 'Chưa có'}</b></span>
+                    <span>Đăng ký: <b>${course.number_of_registrations ?? 0}</b></span>
+                </div>
+                <a class="btn" href="#course-detail?id=${course.course_id}">Xem chi tiết</a>
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error('Lỗi lấy khoá học:', err);
+        const container = document.getElementById('popular-courses');
+        if (container) container.innerHTML = '<div style="color:red;">Không thể tải danh sách khoá học.</div>';
+    }
 }
 
 // Danh sách khoá học
 async function renderCourseList() {
-    const courses = await fetchCourses();
-    const container = document.getElementById('course-list');
-    if (!container) return;
-    container.innerHTML = courses.map(course => `
-        <div class="card course-card">
-            <h3>${course.title}</h3>
-            <p>${course.description}</p>
-            <a class="btn" href="#course-detail?id=${course.id}">Xem chi tiết</a>
-        </div>
-    `).join('');
+    try {
+        const courses = await fetchCourses();
+        const container = document.getElementById('course-list');
+        if (!container) return;
+        if (!courses || courses.length === 0) {
+            container.innerHTML = '<div style="text-align:center;color:#888;">Chưa có khoá học nào.</div>';
+            return;
+        }
+        container.innerHTML = courses.map(course => `
+            <div class="card course-card">
+                <h3>${course.course_name}</h3>
+                <p>${course.description || ''}</p>
+                <div class="course-info">
+                    <span>Đánh giá: <b>${course.evaluate ?? 'Chưa có'}</b></span>
+                    <span>Đăng ký: <b>${course.number_of_registrations ?? 0}</b></span>
+                </div>
+                <a class="btn" href="#course-detail?id=${course.course_id}">Xem chi tiết</a>
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error('Lỗi lấy khoá học:', err);
+        const container = document.getElementById('course-list');
+        if (container) container.innerHTML = '<div style="color:red;">Không thể tải danh sách khoá học.</div>';
+    }
 }
