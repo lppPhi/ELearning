@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app import crud, models, schemas
 from app.database import get_db
 from app.models import RegisteredCourse
+from app.schemas.user import UserLogin
 import logging
 
 router = APIRouter()
@@ -42,3 +43,14 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return crud.user.delete_user(db=db, user_id=user_id)
+
+@router.post("/login")
+def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
+    user = crud.user.get_user_by_email(db, email=login_data.email)
+    if not user or user.password != login_data.password:
+        raise HTTPException(status_code=401, detail="Email hoặc mật khẩu không đúng")
+    return {
+        "user_id": user.user_id,
+        "full_name": user.full_name,
+        "email": user.email
+    }

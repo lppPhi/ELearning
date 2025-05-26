@@ -14,6 +14,7 @@ class Course(Base):
     number_of_registrations = Column('NumberOfRegistrations', Integer, default=0)
     evaluate = Column('Evaluate', Float, default=0.0)
     user_id = Column('UserID', Integer, ForeignKey('users.UserID'))
+    # image_url = Column('ImageUrl', String, nullable=True)
 
     user = relationship("User", back_populates="courses")
     chapters = relationship("Chapter", back_populates="course")

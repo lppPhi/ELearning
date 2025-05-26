@@ -10,6 +10,7 @@ class CourseBase(BaseModel):
     number_of_registrations: Optional[int] = None
     evaluate: Optional[float] = None
     user_id: Optional[int] = None
+    image_url: Optional[str] = None
 
 class CourseCreate(CourseBase):
     pass
@@ -23,6 +24,7 @@ class CourseUpdate(BaseModel):
     number_of_registrations: Optional[int] = None
     evaluate: Optional[float] = None
     user_id: Optional[int] = None
+    image_url: Optional[str] = None
 
 class Course(CourseBase):
     course_id: int
