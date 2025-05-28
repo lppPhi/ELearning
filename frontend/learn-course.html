@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học Khóa Học</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS đã cung cấp ở lần trước, giữ nguyên */
+        .learn-course-layout { display: flex; min-height: calc(100vh - 80px); margin-top: 20px; }
+        .learn-sidebar { width: 320px; background-color: var(--white-color); padding: 20px; overflow-y: auto; border-right: 1px solid var(--light-color); box-shadow: 2px 0 5px rgba(0,0,0,0.05); height: calc(100vh - 80px); position: sticky; top: 80px; }
+        .learn-sidebar h3.course-title-sidebar { font-size: 1.4em; color: var(--primary-color); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--light-color); word-break: break-word; }
+        .learn-sidebar .chapter-item { margin-bottom: 15px; }
+        .learn-sidebar .chapter-title { font-weight: 600; padding: 10px; background-color: #f0f2f5; border-radius: var(--border-radius); margin-bottom: 8px; cursor: default; font-size: 1.05em; }
+        .learn-sidebar .part-list { list-style: none; padding-left: 10px; }
+        .learn-sidebar .part-item a { display: flex; align-items: center; padding: 9px 12px; color: var(--dark-color); text-decoration: none; border-radius: var(--border-radius); transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease; font-size: 0.9em; margin-bottom: 4px; }
+        .learn-sidebar .part-item a:hover { background-color: var(--light-color); color: var(--primary-color); transform: translateX(3px); }
+        .learn-sidebar .part-item a.active-part { background-color: var(--primary-color); color: var(--white-color); font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .learn-sidebar .part-item a i { margin-right: 10px; opacity: 0.6; font-size: 0.9em; }
+        .learn-sidebar .part-item a.active-part i { opacity: 1; }
+        .learn-sidebar .no-parts-message { font-size: 0.85em; color: var(--gray-color); padding-left: 25px; font-style: italic; }
+        .learn-content-area { flex-grow: 1; padding: 20px 30px; overflow-y: auto; }
+        .learn-content-area h2#current-part-title { font-size: 1.8em; margin-bottom: 20px; color: var(--dark-color); padding-bottom: 10px; border-bottom: 1px solid var(--light-color); }
+        #video-player-container { background-color: #000; border-radius: var(--border-radius); overflow: hidden; margin-bottom: 20px; position: relative; padding-top: 56.25%; height: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        #video-player-container iframe, #video-player-container video, #video-player-container embed, #video-player-container object { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        #document-viewer { padding: 20px; border: 1px solid var(--light-color); border-radius: var(--border-radius); background-color: var(--white-color); min-height: 200px; }
+        #document-viewer p { font-size: 1.1em; line-height: 1.7; }
+        #document-viewer a.download-link { display: inline-block; margin-top: 15px; padding: 10px 15px; }
+        .no-content-message { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; text-align: center; padding: 50px; color: var(--gray-color); font-size: 1.1em; }
+        .no-content-message i { font-size: 3em; margin-bottom: 15px; color: var(--light-color); }
+        #auth-check-loader, .error-message-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; text-align: center; padding: 50px; }
+        .error-message-container p.error-message { font-size: 1.2em; color: var(--error-color); }
+        .error-message-container i { font-size: 3em; color: var(--error-color); margin-bottom: 15px; }
+        @media (max-width: 992px) { .learn-course-layout { flex-direction: column; } .learn-sidebar { width: 100%; height: auto; max-height: 45vh; position: static; border-right: none; border-bottom: 1px solid var(--light-color); margin-bottom: 20px; box-shadow: none; } .learn-content-area { padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div id="page-loader"> <div class="spinner"></div><p>Đang tải...</p> </div>
+    <header> <!-- Header HTML của bạn --> </header>
+    <nav class="mobile-menu"> <!-- Mobile Menu HTML của bạn --> </nav>
+
+    <main>
+        <div id="auth-check-loader">
+            <div class="spinner"></div>
+            <p>Đang kiểm tra thông tin...</p>
+        </div>
+
+        <div class="learn-course-layout" id="learn-course-content" style="display: none;">
+            <aside class="learn-sidebar" id="learn-sidebar-nav">
+                <h3 class="course-title-sidebar" id="course-title-sidebar-learn">Tên Khóa Học</h3>
+                <div id="curriculum-nav-list">
+                    <p>Đang tải chương trình học...</p>
+                </div>
+            </aside>
+
+            <section class="learn-content-area">
+                <h2 id="current-part-title">Tên Phần Học</h2>
+                <div id="video-player-container" style="display: none;">
+                    <!-- Video player / PDF embed -->
+                </div>
+                <div id="document-viewer">
+                    <!-- Link tài liệu khác / Thông báo -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer> <!-- Footer HTML của bạn --> </footer>
+    <div id="loginModal" class="modal"> <!-- Login Modal HTML của bạn --> </div>
+    <div id="registerModal" class="modal"> <!-- Register Modal HTML của bạn --> </div>
+
+    <script src="script.js"></script> <!-- Script chung cho header/modal -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const API_BASE_URL = 'http://127.0.0.1:8000';
+            const authCheckLoaderEl = document.getElementById('auth-check-loader');
+            const learnCourseContentEl = document.getElementById('learn-course-content');
+            const courseTitleSidebarEl = document.getElementById('course-title-sidebar-learn');
+            const curriculumNavListEl = document.getElementById('curriculum-nav-list');
+            const currentPartTitleEl = document.getElementById('current-part-title');
+            const videoPlayerContainerEl = document.getElementById('video-player-container');
+            const documentViewerEl = document.getElementById('document-viewer');
+            let currentCourseId = null;
+            let currentUser = null;
+            let courseDataGlobal = null;
+
+            async function apiRequest(endpoint, method = 'GET', data = null, token = null) {
+                const config = { method: method, headers: { 'Content-Type': 'application/json' } };
+                if (token) config.headers['Authorization'] = `Bearer ${token}`;
+                if (data && (method === 'POST' || method === 'PUT')) config.body = JSON.stringify(data);
+                try {
+                    // console.log(`[API Request] Sending ${method} to ${API_BASE_URL}${endpoint}`);
+                    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                    // console.log(`[API Response] Status: ${response.status} for ${endpoint}`);
+                    if (!response.ok) {
+                        let errorDetailMessage = `HTTP error ${response.status}`;
+                        try { const errorData = await response.json(); errorDetailMessage = errorData.detail || JSON.stringify(errorData) || errorDetailMessage; }
+                        catch (e) { const textError = await response.text().catch(()=>""); errorDetailMessage = textError || errorDetailMessage; }
+                        // console.error(`[API Error] for ${endpoint}: ${errorDetailMessage}`);
+                        throw new Error(errorDetailMessage);
+                    }
+                    if (response.status === 204 || response.headers.get("content-length") === "0") { /*console.log(`[API Response] No content for ${endpoint}`);*/ return null; }
+                    const jsonData = await response.json();
+                    // console.log(`[API Response] Data for ${endpoint}:`, jsonData);
+                    return jsonData;
+                } catch (error) { /*console.error(`[API Exception] Request to ${endpoint} failed:`, error);*/ throw error; }
+            }
+
+            function getCourseIdFromUrl() { return new URLSearchParams(window.location.search).get('courseId'); }
+            function displayError(message) { console.error("Displaying Error on page:", message); authCheckLoaderEl.innerHTML = `<div class="error-message-container"><i class="fas fa-exclamation-triangle"></i><p class="error-message">${message}</p><a href="index.html" class="btn btn-primary" style="margin-top:15px;">Về Trang Chủ</a></div>`; learnCourseContentEl.style.display = 'none'; authCheckLoaderEl.style.display = 'flex'; }
+
+            async function initializeLearnPage() {
+                currentUser = JSON.parse(localStorage.getItem('userData'));
+                currentCourseId = getCourseIdFromUrl();
+                // console.log("Learn Page - Current Course ID from URL:", currentCourseId);
+
+                if (!currentCourseId) { displayError('Lỗi: Không tìm thấy ID khóa học trên URL.'); return; }
+                if (!currentUser) { /* ... login prompt logic ... */ authCheckLoaderEl.innerHTML = `...`; return; }
+
+                try {
+                    const courseBasicInfo = await apiRequest(`/courses/${currentCourseId}`);
+                    if (!courseBasicInfo) { displayError('Không tìm thấy thông tin khóa học (ID: ' + currentCourseId + ').'); return; }
+                    courseTitleSidebarEl.textContent = courseBasicInfo.CourseName;
+
+                    const chapters = await apiRequest(`/courses/${currentCourseId}/chapters`);
+                    courseDataGlobal = { ...courseBasicInfo, chapters: [] }; // Khởi tạo courseDataGlobal ở đây
+
+                    if (chapters && chapters.length > 0) {
+                        for (const chapter of chapters) {
+                            const parts = await apiRequest(`/chapters/${chapter.ChapterID}/parts`);
+                            courseDataGlobal.chapters.push({ ...chapter, parts: parts || [] });
+                        }
+                    }
+                    
+                    renderCurriculumNavigation(courseDataGlobal.chapters); // Gọi render sau khi đã có đủ dữ liệu
+                    
+                    let firstPartToLoad = null;
+                    if (courseDataGlobal.chapters.length > 0 && 
+                        courseDataGlobal.chapters[0].parts && 
+                        courseDataGlobal.chapters[0].parts.length > 0) {
+                        firstPartToLoad = courseDataGlobal.chapters[0].parts[0];
+                    }
+                    
+                    if (firstPartToLoad) {
+                        loadPartContent(firstPartToLoad);
+                        // Đảm bảo DOM đã render xong trước khi querySelector
+                        setTimeout(() => {
+                            const firstPartLink = curriculumNavListEl.querySelector(`.part-item a[data-part-id="${firstPartToLoad.PartID}"]`);
+                            if (firstPartLink) {
+                                document.querySelectorAll('.learn-sidebar .part-item a').forEach(a => a.classList.remove('active-part'));
+                                firstPartLink.classList.add('active-part');
+                            }
+                        }, 0);
+                    } else {
+                        currentPartTitleEl.textContent = "Chào mừng đến với khóa học!";
+                        videoPlayerContainerEl.style.display = 'none';
+                        documentViewerEl.innerHTML = '<div class="no-content-message"><i class="fas fa-info-circle"></i><p>Khóa học này chưa có nội dung bài học hoặc phần đầu tiên chưa có nội dung. Vui lòng chọn một phần học từ sidebar (nếu có).</p></div>';
+                    }
+
+                    authCheckLoaderEl.style.display = 'none';
+                    learnCourseContentEl.style.display = 'flex';
+
+                } catch (error) {
+                    console.error("Error initializing learn page:", error.message);
+                    displayError(`Lỗi tải trang học: ${error.message}`);
+                }
+            }
+
+            function renderCurriculumNavigation(chapters) {
+                curriculumNavListEl.innerHTML = ''; // Xóa placeholder "Đang tải chương trình học..."
+                if (!chapters || chapters.length === 0) {
+                    curriculumNavListEl.innerHTML = '<p style="padding:10px; font-style:italic;">Khóa học này chưa có chương trình học.</p>';
+                    return;
+                }
+
+                chapters.forEach((chapter, chapterIndex) => {
+                    const chapterDiv = document.createElement('div');
+                    chapterDiv.className = 'chapter-item';
+                    const chapterTitle = document.createElement('div');
+                    chapterTitle.className = 'chapter-title';
+                    chapterTitle.textContent = `${chapterIndex + 1}. ${chapter.ChapterName}`;
+                    // Hiển thị tài liệu của chương nếu có
+                    if (chapter.Document) {
+                        const docLink = document.createElement('a');
+                        docLink.href = (chapter.Document.startsWith('http') ? chapter.Document : `${API_BASE_URL}${chapter.Document}`);
+                        docLink.target = "_blank";
+                        docLink.innerHTML = ` <i class="fas fa-file-alt" style="font-size:0.8em; opacity:0.7;"></i>`;
+                        docLink.title = "Tài liệu chương";
+                        chapterTitle.appendChild(docLink);
+                    }
+                    chapterDiv.appendChild(chapterTitle);
+
+
+                    if (chapter.parts && chapter.parts.length > 0) {
+                        const partsUl = document.createElement('ul');
+                        partsUl.className = 'part-list';
+                        chapter.parts.forEach((part) => {
+                            const partLi = document.createElement('li');
+                            partLi.className = 'part-item';
+                            const partLink = document.createElement('a');
+                            partLink.href = '#';
+                            partLink.dataset.partId = part.PartID;
+                            partLink.innerHTML = `<i class="fas fa-play-circle"></i> ${part.PartName}`;
+                            partLink.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                loadPartContent(part);
+                                document.querySelectorAll('.learn-sidebar .part-item a').forEach(a => a.classList.remove('active-part'));
+                                partLink.classList.add('active-part');
+                            });
+                            partLi.appendChild(partLink);
+                            partsUl.appendChild(partLi);
+                        });
+                        chapterDiv.appendChild(partsUl);
+                    } else {
+                        const noPartsP = document.createElement('p');
+                        noPartsP.className = 'no-parts-message';
+                        noPartsP.textContent = 'Chương này chưa có phần học.';
+                        chapterDiv.appendChild(noPartsP);
+                    }
+                    curriculumNavListEl.appendChild(chapterDiv);
+                });
+            }
+
+            function loadPartContent(part) {
+                currentPartTitleEl.textContent = part.PartName;
+                videoPlayerContainerEl.innerHTML = '';
+                documentViewerEl.innerHTML = '';
+                videoPlayerContainerEl.style.display = 'none';
+
+                if (!part.Document) {
+                    documentViewerEl.innerHTML = '<div class="no-content-message"><i class="far fa-file-alt"></i><p>Phần học này chưa có tài liệu.</p></div>';
+                    return;
+                }
+
+                const docUrl = part.Document;
+                const fullDocUrl = (docUrl.startsWith('http://') || docUrl.startsWith('https://')) ? docUrl : `${API_BASE_URL}${docUrl}`;
+                const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+                const youtubeMatch = fullDocUrl.match(youtubeRegex);
+
+                if (youtubeMatch && youtubeMatch[1]) {
+                    videoPlayerContainerEl.style.display = 'block';
+                    const videoId = youtubeMatch[1];
+                    videoPlayerContainerEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                } else if (fullDocUrl.match(/\.(mp4|webm|ogg|mov)$/i)) {
+                    videoPlayerContainerEl.style.display = 'block';
+                    videoPlayerContainerEl.innerHTML = `<video controls autoplay width="100%"><source src="${fullDocUrl}" type="video/${fullDocUrl.split('.').pop().toLowerCase()}">Trình duyệt của bạn không hỗ trợ thẻ video.</video>`;
+                } else if (fullDocUrl.match(/\.(pdf)$/i)) {
+                    videoPlayerContainerEl.style.display = 'block';
+                    videoPlayerContainerEl.innerHTML = `<iframe src="${fullDocUrl}" width="100%" height="100%"></iframe>`;
+                    documentViewerEl.innerHTML = `<p style="margin-top:10px; text-align:center;">Không xem được PDF? <a href="${fullDocUrl}" target="_blank" class="btn btn-secondary download-link"><i class="fas fa-file-pdf"></i> Mở/Tải PDF</a></p>`;
+                } else { // Các loại tài liệu khác (Word, Ppt, link web...)
+                    documentViewerEl.innerHTML = `<p>Tài liệu tham khảo: <a href="${fullDocUrl}" target="_blank" class="btn btn-info download-link"><i class="fas fa-external-link-alt"></i> Mở Tài Liệu</a></p>`;
+                }
+            }
+
+            initializeLearnPage();
+
+            window.addEventListener('load', () => { /* ... page loader ... */ });
+            const currentYearEl = document.getElementById('currentYear'); if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
+        });
+    </script>
+</body>
+</html>
