@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Learning Platform - Trang Chủ</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="page-loader">
+        <div class="spinner"></div>
+        <p>Đang tải...</p>
+    </div>
+
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i> E-Learn
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Trang Chủ</a></li>
+                    <li><a href="#courses-section">Khóa Học</a></li>
+                    <!-- Sẽ thêm khi có trang tương ứng -->
+                    <!-- <li><a href="my-courses.html">Khóa Học Của Tôi</a></li> -->
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn btn-secondary">Đăng Nhập</button>
+                <button id="registerBtn" class="btn btn-primary">Đăng Ký</button>
+            </div>
+            <div id="userInfo" class="user-info" style="display:none;">
+                <img id="userAvatar" src="images/default-avatar.png" alt="Avatar" class="avatar">
+                <span id="usernameDisplay"></span>
+                <div class="dropdown">
+                    <button class="dropdown-btn"><i class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-content">
+                        <a href="profile.html" id="profileLink"><i class="fas fa-user"></i> Hồ sơ</a>
+                        <a href="my-courses.html" id="myCoursesLink"><i class="fas fa-book-open-reader"></i> Khóa học của tôi</a>
+                        <a href="create-course.html" id="createCourseLink"><i class="fas fa-plus-circle"></i> Tạo khóa học</a>
+                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+            <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+    <nav class="mobile-menu">
+        <ul>
+            <li><a href="index.html">Trang Chủ</a></li>
+            <li><a href="#courses-section">Khóa Học</a></li>
+            <!-- Mobile auth buttons will be handled by JS -->
+        </ul>
+        <div class="mobile-auth-buttons" style="padding: 15px;">
+             <!-- JS will populate this based on login state -->
+        </div>
+    </nav>
+
+
+    <main>
+        <section id="hero">
+            <div class="hero-overlay"></div>
+            <div class="container hero-content">
+                <h1>Khám Phá Tri Thức, <span class="highlight">Nâng Tầm Tương Lai</span></h1>
+                <p>Tham gia hàng ngàn khóa học trực tuyến chất lượng cao từ các chuyên gia hàng đầu.</p>
+                <a href="#courses-section" class="btn btn-hero">Bắt Đầu Học Ngay</a>
+            </div>
+            <div class="hero-bg-animation">
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+        </section>
+
+        <section id="courses-section" class="container section-padding">
+            <h2 class="section-title"><span>Khóa Học Nổi Bật</span></h2>
+            <div id="course-list" class="course-grid">
+                <!-- Course cards will be dynamically inserted here by JavaScript -->
+                <!-- Example Card Structure (for reference):
+                <div class="course-card">
+                    <div class="card-image-container">
+                        <img src="images/course-placeholder.jpg" alt="Course Image">
+                        <span class="course-price">$19.99</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="course-title">Tên Khóa Học Rất Dài Để Kiểm Tra Giao Diện</h3>
+                        <p class="course-instructor">Giảng viên: Nguyễn Văn A</p>
+                        <p class="course-description">Mô tả ngắn về khóa học, giới thiệu những điểm nổi bật chính...</p>
+                        <div class="course-meta">
+                            <span><i class="fas fa-users"></i> 1234 học viên</span>
+                            <span><i class="fas fa-star"></i> 4.5 (250)</span>
+                        </div>
+                        <a href="course-detail.html?id=1" class="btn btn-primary btn-block">Xem Chi Tiết</a>
+                    </div>
+                </div>
+                -->
+            </div>
+            <div id="loading-courses" style="text-align: center; padding: 20px; display: none;">
+                <div class="spinner-small"></div> Đang tải thêm khóa học...
+            </div>
+             <div id="no-courses" style="text-align: center; padding: 20px; display: none;">
+                <p>Hiện tại chưa có khóa học nào.</p>
+            </div>
+        </section>
+
+        <section id="why-us" class="section-padding">
+            <div class="container">
+                <h2 class="section-title"><span>Tại Sao Chọn E-Learn?</span></h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-chalkboard-teacher feature-icon"></i>
+                        <h3>Giảng Viên Chuyên Môn Cao</h3>
+                        <p>Học hỏi từ các chuyên gia đầu ngành với kinh nghiệm thực tế phong phú.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-book-reader feature-icon"></i>
+                        <h3>Nội Dung Đa Dạng</h3>
+                        <p>Hàng ngàn khóa học thuộc nhiều lĩnh vực, cập nhật liên tục.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-infinity feature-icon"></i>
+                        <h3>Học Tập Linh Hoạt</h3>
+                        <p>Truy cập khóa học mọi lúc, mọi nơi, trên mọi thiết bị.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section about">
+                    <h3 class="logo-text"><i class="fas fa-graduation-cap"></i> E-Learn</h3>
+                    <p>
+                        E-Learn là nền tảng học trực tuyến hàng đầu, mang đến cơ hội tiếp cận tri thức
+                        chất lượng cao cho mọi người.
+                    </p>
+                    <div class="contact">
+                        <span><i class="fas fa-phone"></i>   123-456-7890</span>
+                        <span><i class="fas fa-envelope"></i>   info@elearn.com</span>
+                    </div>
+                    <div class="socials">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section links">
+                    <h3>Liên Kết Nhanh</h3>
+                    <ul>
+                        <li><a href="#">Về Chúng Tôi</a></li>
+                        <li><a href="#">Điều Khoản Dịch Vụ</a></li>
+                        <li><a href="#">Chính Sách Bảo Mật</a></li>
+                        <li><a href="#">Hỗ Trợ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section contact-form-footer">
+                    <h3>Liên Hệ</h3>
+                    <form action="#" method="post">
+                        <input type="email" name="email" class="text-input contact-input" placeholder="Địa chỉ email của bạn...">
+                        <textarea rows="3" name="message" class="text-input contact-input" placeholder="Lời nhắn của bạn..."></textarea>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Gửi
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © <span id="currentYear"></span> E-Learn Platform | Designed by AI with Love
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeLoginModal">×</span>
+            <h2>Đăng Nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Tên đăng nhập:</label>
+                    <input type="text" id="loginUsername" name="UserName" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mật khẩu:</label>
+                    <input type="password" id="loginPassword" name="Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button>
+                <p class="form-message" id="loginMessage"></p>
+                <p class="switch-form">Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeRegisterModal">×</span>
+            <h2>Đăng Ký</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">Tên đăng nhập:</label>
+                    <input type="text" id="registerUsername" name="UserName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" name="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Mật khẩu:</label>
+                    <input type="password" id="registerPassword" name="Password" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Số điện thoại (tùy chọn):</label>
+                    <input type="tel" id="registerPhone" name="Phone">
+                </div>
+                <!-- Image upload can be more complex, let's start with a URL or handle it on profile edit -->
+                <button type="submit" class="btn btn-primary btn-block">Đăng Ký</button>
+                <p class="form-message" id="registerMessage"></p>
+                <p class="switch-form">Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

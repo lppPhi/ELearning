@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Chương Trình Học</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .manage-curriculum-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        .manage-curriculum-container h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .course-title-display {
+            text-align: center;
+            font-size: 1.2em;
+            color: var(--dark-color);
+            margin-bottom: 30px;
+        }
+
+        .chapter-management-item {
+            background-color: #f9f9f9;
+            border: 1px solid var(--light-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .chapter-header-manage {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--gray-color);
+        }
+        .chapter-header-manage h3 { margin: 0; font-size: 1.4em; }
+        .chapter-actions .btn-sm { padding: 5px 10px; font-size: 0.85em; margin-left: 5px; }
+
+        .parts-list-manage ul { list-style: none; padding-left: 20px; }
+        .parts-list-manage li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--light-color);
+        }
+        .parts-list-manage li:last-child { border-bottom: none; }
+        .part-name-manage { flex-grow: 1; }
+        .part-document-display { font-size: 0.8em; color: var(--gray-color); margin-left: 10px; }
+        .part-document-display a { color: var(--accent-color); }
+
+        .add-item-form {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: var(--white-color);
+            border: 1px dashed var(--primary-color);
+            border-radius: var(--border-radius);
+            display: none; /* Hidden by default */
+        }
+        .add-item-form.active { display: block; }
+        .add-item-form h4 { margin-top: 0; margin-bottom: 10px; color: var(--primary-color); }
+        .add-item-form .form-group { margin-bottom: 15px; }
+
+        #add-chapter-btn-main { margin-bottom: 20px; }
+        #loader, #auth-message-curriculum { text-align: center; padding: 20px; }
+        .btn-danger { background-color: var(--error-color); color: var(--white-color); }
+        .btn-danger:hover { background-color: #c0392b; color: var(--white-color); }
+        .form-inline { display: flex; gap: 10px; align-items: flex-end; }
+        .form-inline .form-group { flex-grow: 1; margin-bottom: 0; }
+    </style>
+</head>
+<body>
+    <div id="page-loader"> /* ... */ </div>
+    <header> /* ... Copy header from index.html ... */ </header>
+    <nav class="mobile-menu"> /* ... Copy mobile menu from index.html ... */ </nav>
+
+    <main>
+        <div class="manage-curriculum-container">
+            <h1>Quản Lý Chương Trình Học</h1>
+            <p id="course-title-display" class="course-title-display">Cho khóa học: <span id="courseNameDisplayLoading">Đang tải...</span></p>
+            <div id="auth-message-curriculum" style="display:none;"></div>
+            <div id="loader"><div class="spinner"></div> Đang tải...</div>
+
+            <div id="curriculum-content" style="display:none;">
+                <button id="add-chapter-btn-main" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Thêm Chương Mới</button>
+                <div id="add-chapter-form-container" class="add-item-form" style="margin-bottom: 20px;">
+                    <h4>Thêm Chương Mới</h4>
+                    <form id="addChapterForm" class="form-inline">
+                        <div class="form-group">
+                            <label for="newChapterName" class="sr-only">Tên Chương</label>
+                            <input type="text" id="newChapterName" placeholder="Tên chương" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="newChapterDocument" class="sr-only">Tài liệu chương (Link)</label>
+                            <input type="text" id="newChapterDocument" placeholder="Link tài liệu (tùy chọn)" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-success">Lưu Chương</button>
+                        <button type="button" class="btn btn-secondary cancel-add-btn">Hủy</button>
+                    </form>
+                </div>
+
+                <div id="chapters-list">
+                    <!-- Chapters will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section about">
+                    <h3 class="logo-text"><i class="fas fa-graduation-cap"></i> E-Learn</h3>
+                    <p>
+                        E-Learn là nền tảng học trực tuyến hàng đầu, mang đến cơ hội tiếp cận tri thức
+                        chất lượng cao cho mọi người.
+                    </p>
+                    <div class="contact">
+                        <span><i class="fas fa-phone"></i>   123-456-7890</span>
+                        <span><i class="fas fa-envelope"></i>   info@elearn.com</span>
+                    </div>
+                    <div class="socials">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section links">
+                    <h3>Liên Kết Nhanh</h3>
+                    <ul>
+                        <li><a href="#">Về Chúng Tôi</a></li>
+                        <li><a href="#">Điều Khoản Dịch Vụ</a></li>
+                        <li><a href="#">Chính Sách Bảo Mật</a></li>
+                        <li><a href="#">Hỗ Trợ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section contact-form-footer">
+                    <h3>Liên Hệ</h3>
+                    <form action="#" method="post">
+                        <input type="email" name="email" class="text-input contact-input" placeholder="Địa chỉ email của bạn...">
+                        <textarea rows="3" name="message" class="text-input contact-input" placeholder="Lời nhắn của bạn..."></textarea>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Gửi
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © <span id="currentYear"></span> E-Learn Platform | Designed by AI with Love
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Editing Chapter/Part (Generic) -->
+    <div id="editItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeEditModal">×</span>
+            <h2 id="editModalTitle">Chỉnh Sửa Mục</h2>
+            <form id="editItemForm">
+                <input type="hidden" id="editItemId">
+                <input type="hidden" id="editItemType"> <!-- 'chapter' or 'part' -->
+                <input type="hidden" id="editParentId"> <!-- ChapterID if editing a part -->
+                <div class="form-group">
+                    <label for="editItemName">Tên <span style="color:red;">*</span></label>
+                    <input type="text" id="editItemName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editItemDocument">Tài liệu (URL Video/Tài liệu, Link YouTube)</label>
+                    <input type="text" id="editItemDocument" placeholder="https://example.com/doc.pdf hoặc https://youtu.be/VIDEO_ID">
+                </div>
+                <p class="form-message" id="editItemMessage"></p>
+                <button type="submit" class="btn btn-primary btn-block">Lưu Thay Đổi</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script> <!-- For header, modals general functions -->
+    <script>
+        // Script specific to manage-curriculum.html
+        document.addEventListener('DOMContentLoaded', function() {
+            const API_BASE_URL = 'http://127.0.0.1:8000';
+            // --- DOM Elements ---
+            const loader = document.getElementById('loader');
+            const authMessageEl = document.getElementById('auth-message-curriculum');
+            const curriculumContentEl = document.getElementById('curriculum-content');
+            const courseNameDisplayLoadingEl = document.getElementById('courseNameDisplayLoading');
+            const chaptersListEl = document.getElementById('chapters-list');
+            const addChapterBtnMain = document.getElementById('add-chapter-btn-main');
+            const addChapterFormContainer = document.getElementById('add-chapter-form-container');
+            const addChapterForm = document.getElementById('addChapterForm');
+            const newChapterNameInput = document.getElementById('newChapterName');
+            const newChapterDocumentInput = document.getElementById('newChapterDocument');
+
+            // Edit Modal Elements
+            const editItemModal = document.getElementById('editItemModal');
+            const closeEditModalBtn = document.getElementById('closeEditModal');
+            const editModalTitle = document.getElementById('editModalTitle');
+            const editItemForm = document.getElementById('editItemForm');
+            const editItemIdInput = document.getElementById('editItemId');
+            const editItemTypeInput = document.getElementById('editItemType');
+            const editParentIdInput = document.getElementById('editParentId');
+            const editItemNameInput = document.getElementById('editItemName');
+            const editItemDocumentInput = document.getElementById('editItemDocument');
+            const editItemMessageEl = document.getElementById('editItemMessage');
+
+
+            let currentCourseId = null;
+            let courseCreatorId = null;
+
+            // --- COPIED apiRequest function ---
+            async function apiRequest(endpoint, method = 'GET', data = null, token = null) {
+                // ... (Copy the same apiRequest function used in previous files)
+                const config = { method: method, headers: { 'Content-Type': 'application/json' } };
+                if (token) config.headers['Authorization'] = `Bearer ${token}`;
+                if (data && (method === 'POST' || method === 'PUT')) config.body = JSON.stringify(data);
+                if (method === 'DELETE' && !data) delete config.body; // DELETE might not have body
+                try {
+                    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                     if (method === 'DELETE' && (response.status === 200 || response.status === 204)) {
+                        if (response.status === 204 || response.headers.get("content-length") === "0") return null;
+                        const contentType = response.headers.get("content-type");
+                        if (contentType && contentType.includes("application/json")) return await response.json();
+                        return { ok: true };
+                    }
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+                        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                    }
+                    if (response.status === 204 || response.headers.get("content-length") === "0") return null;
+                    return await response.json();
+                } catch (error) { console.error(`API request to ${endpoint} failed:`, error); throw error; }
+            }
+            // --- END COPIED apiRequest function ---
+
+             function displayModalMessage(element, message, isSuccess = true) {
+                if(element) {
+                    element.textContent = message;
+                    element.className = `form-message ${isSuccess ? 'success' : 'error'}`;
+                }
+            }
+
+            function getCourseIdFromUrl() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('courseId');
+            }
+
+            async function initializePage() {
+                currentCourseId = getCourseIdFromUrl();
+                if (!currentCourseId) {
+                    loader.textContent = 'Lỗi: Không tìm thấy ID khóa học.';
+                    return;
+                }
+
+                const loggedInUser = JSON.parse(localStorage.getItem('userData'));
+                if (!loggedInUser) {
+                    authMessageEl.innerHTML = 'Vui lòng <a href="#" id="loginLinkCurriculum">đăng nhập</a> để quản lý chương trình học.';
+                    authMessageEl.style.display = 'block';
+                    loader.style.display = 'none';
+                     document.getElementById('loginLinkCurriculum')?.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const loginModalEl = document.getElementById('loginModal');
+                        if (typeof openModal === 'function') openModal(loginModalEl); else if(loginModalEl) loginModalEl.classList.add('show');
+                    });
+                    return;
+                }
+
+                try {
+                    const courseBasic = await apiRequest(`/courses/${currentCourseId}`);
+                    const creator = await apiRequest(`/courses/${currentCourseId}/creator`);
+                    courseCreatorId = creator.UserID;
+                    courseNameDisplayLoadingEl.textContent = courseBasic.CourseName;
+
+                    if (loggedInUser.UserID !== courseCreatorId) {
+                        authMessageEl.textContent = 'Bạn không có quyền chỉnh sửa chương trình học này.';
+                        authMessageEl.style.display = 'block';
+                        loader.style.display = 'none';
+                        return;
+                    }
+
+                    loader.style.display = 'none';
+                    curriculumContentEl.style.display = 'block';
+                    await loadChaptersAndParts();
+
+                } catch (error) {
+                    loader.textContent = `Lỗi tải thông tin: ${error.message}`;
+                }
+            }
+
+            async function loadChaptersAndParts() {
+                chaptersListEl.innerHTML = '<p>Đang tải chương trình học...</p>';
+                try {
+                    const chapters = await apiRequest(`/courses/${currentCourseId}/chapters`);
+                    chaptersListEl.innerHTML = ''; // Clear loading
+                    if (chapters && chapters.length > 0) {
+                        for (const chapter of chapters) {
+                            const chapterEl = await createChapterElement(chapter);
+                            chaptersListEl.appendChild(chapterEl);
+                        }
+                    } else {
+                        chaptersListEl.innerHTML = '<p>Khóa học này chưa có chương nào. Hãy thêm chương mới!</p>';
+                    }
+                } catch (error) {
+                    chaptersListEl.innerHTML = `<p class="error-message">Lỗi tải chương trình học: ${error.message}</p>`;
+                }
+            }
+
+            async function createChapterElement(chapter) {
+                const div = document.createElement('div');
+                div.className = 'chapter-management-item';
+                div.dataset.chapterId = chapter.ChapterID;
+
+                let chapterDocumentLink = '';
+                if (chapter.Document) {
+                    chapterDocumentLink = `<span class="part-document-display" style="font-size:0.9em; margin-left:0;">Tài liệu: <a href="${chapter.Document}" target="_blank">${chapter.Document.substring(0,30)}...</a></span>`;
+                }
+
+                div.innerHTML = `
+                    <div class="chapter-header-manage">
+                        <h3>${chapter.ChapterName}</h3>
+                        <div class="chapter-actions">
+                            <button class="btn btn-sm btn-info edit-chapter-btn"><i class="fas fa-edit"></i> Sửa</button>
+                            <button class="btn btn-sm btn-danger delete-chapter-btn"><i class="fas fa-trash-alt"></i> Xóa</button>
+                        </div>
+                    </div>
+                    ${chapterDocumentLink}
+                    <div class="parts-list-manage">
+                        <h4>Phần học:</h4>
+                        <ul id="parts-for-chapter-${chapter.ChapterID}"><li>Đang tải phần học...</li></ul>
+                        <button class="btn btn-sm btn-success add-part-btn" style="margin-top:10px;"><i class="fas fa-plus"></i> Thêm Phần Học</button>
+                        <div class="add-item-form add-part-form-for-chapter-${chapter.ChapterID}" style="margin-top:10px;">
+                            <h4>Thêm Phần Học Mới cho chương "${chapter.ChapterName}"</h4>
+                            <form class="form-inline addPartForm">
+                                <input type="hidden" name="chapterId" value="${chapter.ChapterID}">
+                                <div class="form-group">
+                                    <input type="text" name="partName" placeholder="Tên phần học" required class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" name="partDocument" placeholder="Link tài liệu/video (tùy chọn)" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-success btn-sm">Lưu Phần</button>
+                                <button type="button" class="btn btn-secondary btn-sm cancel-add-btn">Hủy</button>
+                            </form>
+                        </div>
+                    </div>
+                `;
+
+                // Event listeners for chapter actions
+                div.querySelector('.edit-chapter-btn').addEventListener('click', () => openEditModal('chapter', chapter.ChapterID, null, chapter.ChapterName, chapter.Document));
+                div.querySelector('.delete-chapter-btn').addEventListener('click', () => handleDeleteChapter(chapter.ChapterID, chapter.ChapterName));
+                div.querySelector('.add-part-btn').addEventListener('click', (e) => {
+                    e.target.style.display = 'none'; // Hide "Add Part" button
+                    div.querySelector(`.add-part-form-for-chapter-${chapter.ChapterID}`).classList.add('active');
+                });
+                 div.querySelector(`.add-part-form-for-chapter-${chapter.ChapterID} .cancel-add-btn`).addEventListener('click', (e) => {
+                    div.querySelector(`.add-part-form-for-chapter-${chapter.ChapterID}`).classList.remove('active');
+                    div.querySelector('.add-part-btn').style.display = 'inline-block'; // Show "Add Part" button again
+                });
+                div.querySelector(`.add-part-form-for-chapter-${chapter.ChapterID} form`).addEventListener('submit', handleAddPartSubmit);
+
+
+                // Load parts for this chapter
+                const partsUl = div.querySelector(`#parts-for-chapter-${chapter.ChapterID}`);
+                try {
+                    const parts = await apiRequest(`/chapters/${chapter.ChapterID}/parts`);
+                    partsUl.innerHTML = '';
+                    if (parts && parts.length > 0) {
+                        parts.forEach(part => {
+                            const partLi = createPartElement(part, chapter.ChapterID);
+                            partsUl.appendChild(partLi);
+                        });
+                    } else {
+                        partsUl.innerHTML = '<li>Chương này chưa có phần học nào.</li>';
+                    }
+                } catch (error) {
+                    partsUl.innerHTML = `<li>Lỗi tải phần học: ${error.message}</li>`;
+                }
+                return div;
+            }
+
+            function createPartElement(part, chapterId) {
+                const li = document.createElement('li');
+                li.dataset.partId = part.PartID;
+                let partDocumentLink = '';
+                if (part.Document) {
+                    partDocumentLink = `<span class="part-document-display">Tài liệu: <a href="${part.Document}" target="_blank">${part.Document.substring(0,30)}...</a></span>`;
+                }
+                li.innerHTML = `
+                    <span class="part-name-manage">${part.PartName} ${partDocumentLink}</span>
+                    <div class="part-actions">
+                        <button class="btn btn-sm btn-info edit-part-btn"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger delete-part-btn"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `;
+                li.querySelector('.edit-part-btn').addEventListener('click', () => openEditModal('part', part.PartID, chapterId, part.PartName, part.Document));
+                li.querySelector('.delete-part-btn').addEventListener('click', () => handleDeletePart(part.PartID, part.PartName, chapterId));
+                return li;
+            }
+
+            // --- Add Chapter ---
+            addChapterBtnMain.addEventListener('click', () => {
+                addChapterFormContainer.classList.add('active');
+                addChapterBtnMain.style.display = 'none';
+            });
+            addChapterFormContainer.querySelector('.cancel-add-btn').addEventListener('click', () => {
+                 addChapterFormContainer.classList.remove('active');
+                 addChapterBtnMain.style.display = 'inline-block';
+                 addChapterForm.reset();
+            });
+
+            addChapterForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const chapterName = newChapterNameInput.value.trim();
+                const chapterDocument = newChapterDocumentInput.value.trim() || null;
+                if (!chapterName) { alert('Tên chương không được để trống.'); return; }
+
+                try {
+                    await apiRequest('/chapters/', 'POST', {
+                        CourseID: currentCourseId,
+                        ChapterName: chapterName,
+                        Document: chapterDocument
+                    });
+                    alert('Thêm chương thành công!');
+                    addChapterForm.reset();
+                    addChapterFormContainer.classList.remove('active');
+                    addChapterBtnMain.style.display = 'inline-block';
+                    await loadChaptersAndParts(); // Reload
+                } catch (error) {
+                    alert(`Lỗi thêm chương: ${error.message}`);
+                }
+            });
+
+            // --- Add Part ---
+            async function handleAddPartSubmit(e) {
+                e.preventDefault();
+                const form = e.target;
+                const chapterId = form.querySelector('input[name="chapterId"]').value;
+                const partName = form.querySelector('input[name="partName"]').value.trim();
+                const partDocument = form.querySelector('input[name="partDocument"]').value.trim() || null;
+
+                if (!partName) { alert('Tên phần học không được để trống.'); return; }
+
+                try {
+                    await apiRequest('/parts/', 'POST', {
+                        ChapterID: parseInt(chapterId),
+                        PartName: partName,
+                        Document: partDocument
+                    });
+                    alert('Thêm phần học thành công!');
+                    form.reset();
+                    document.querySelector(`.add-part-form-for-chapter-${chapterId}`).classList.remove('active');
+                     // Find the add part button for this chapter and show it again
+                    const chapterElement = document.querySelector(`.chapter-management-item[data-chapter-id="${chapterId}"]`);
+                    if (chapterElement) {
+                        chapterElement.querySelector('.add-part-btn').style.display = 'inline-block';
+                    }
+                    await loadChaptersAndParts(); // Reload to show new part
+                } catch (error) {
+                    alert(`Lỗi thêm phần học: ${error.message}`);
+                }
+            }
+
+
+            // --- Edit Modal Logic ---
+            function openEditModal(itemType, itemId, parentId, itemName, itemDocument) {
+                editModalTitle.textContent = itemType === 'chapter' ? 'Chỉnh Sửa Chương' : 'Chỉnh Sửa Phần Học';
+                editItemIdInput.value = itemId;
+                editItemTypeInput.value = itemType;
+                editParentIdInput.value = parentId || ''; // ChapterID for part
+                editItemNameInput.value = itemName;
+                editItemDocumentInput.value = itemDocument || '';
+                editItemMessageEl.textContent = '';
+                editItemModal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+            if(closeEditModalBtn) closeEditModalBtn.addEventListener('click', () => {
+                editItemModal.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            });
+            window.addEventListener('click', (event) => {
+                if (event.target === editItemModal) {
+                    editItemModal.classList.remove('show');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+
+            editItemForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const itemId = editItemIdInput.value;
+                const itemType = editItemTypeInput.value;
+                const parentId = editParentIdInput.value; // ChapterID for part
+                const itemName = editItemNameInput.value.trim();
+                const itemDocument = editItemDocumentInput.value.trim() || null;
+
+                if (!itemName) { displayModalMessage(editItemMessageEl, 'Tên không được để trống.', false); return; }
+
+                let endpoint, data;
+                if (itemType === 'chapter') {
+                    endpoint = `/chapters/${itemId}`;
+                    data = { ChapterName: itemName, Document: itemDocument };
+                } else { // part
+                    endpoint = `/parts/${itemId}`;
+                    data = { PartName: itemName, Document: itemDocument };
+                }
+
+                try {
+                    await apiRequest(endpoint, 'PUT', data);
+                    displayModalMessage(editItemMessageEl, 'Cập nhật thành công!', true);
+                    setTimeout(async () => {
+                        editItemModal.classList.remove('show');
+                        document.body.style.overflow = 'auto';
+                        await loadChaptersAndParts(); // Reload
+                    }, 1000);
+                } catch (error) {
+                    displayModalMessage(editItemMessageEl, `Lỗi cập nhật: ${error.message}`, false);
+                }
+            });
+
+            // --- Delete Chapter ---
+            async function handleDeleteChapter(chapterId, chapterName) {
+                if (!confirm(`Bạn có chắc chắn muốn xóa chương "${chapterName}"? Nếu chương có phần học, bạn sẽ không xóa được.`)) return;
+                try {
+                    await apiRequest(`/chapters/${chapterId}`, 'DELETE');
+                    alert('Xóa chương thành công!');
+                    await loadChaptersAndParts(); // Reload
+                } catch (error) {
+                    alert(`Lỗi xóa chương: ${error.message}. Đảm bảo chương không còn phần học nào.`);
+                }
+            }
+
+            // --- Delete Part ---
+            async function handleDeletePart(partId, partName, chapterId) {
+                if (!confirm(`Bạn có chắc chắn muốn xóa phần học "${partName}"?`)) return;
+                try {
+                    await apiRequest(`/parts/${partId}`, 'DELETE');
+                    alert('Xóa phần học thành công!');
+                    await loadChaptersAndParts(); // Reload chapter's parts (or all)
+                } catch (error) {
+                    alert(`Lỗi xóa phần học: ${error.message}`);
+                }
+            }
+
+            // Initial Page Load
+            initializePage();
+
+            // Footer year and page loader
+            const currentYearEl = document.getElementById('currentYear');
+            if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
+            window.addEventListener('load', () => {
+                const globalPageLoader = document.getElementById('page-loader');
+                if (globalPageLoader) {
+                    globalPageLoader.style.opacity = '0';
+                    setTimeout(() => { globalPageLoader.style.display = 'none'; }, 500);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

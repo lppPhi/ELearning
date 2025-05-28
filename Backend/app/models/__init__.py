@@ -1,1 +1,0 @@
-from .registered_course import RegisteredCourse

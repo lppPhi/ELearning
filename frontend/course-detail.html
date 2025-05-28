@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Khóa Học</title>
+    <link rel="stylesheet" href="style.css"> <!-- Sử dụng lại style.css chung -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Styles specific to course-detail page */
+        .course-detail-header {
+            background-color: var(--dark-color);
+            color: var(--white-color);
+            padding: 40px 0;
+            text-align: center;
+        }
+        .course-detail-header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+        }
+        .course-detail-header .instructor-info {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        .course-detail-header .instructor-info img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 1px solid var(--secondary-color);
+        }
+        .course-detail-header .course-meta-icons span {
+            margin: 0 10px;
+            font-size: 0.9em;
+        }
+        .course-detail-header .course-meta-icons i {
+            margin-right: 5px;
+            color: var(--secondary-color);
+        }
+
+        .course-content-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .course-main-content {
+            flex: 3; /* Takes up more space */
+            min-width: 300px; /* Ensure it doesn't get too small */
+        }
+
+        .course-sidebar {
+            flex: 1;
+            min-width: 280px; /* Minimum width for sidebar */
+            background-color: var(--white-color);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            align-self: flex-start; /* Align to top */
+            position: sticky;
+            top: 100px; /* Adjust based on header height */
+        }
+        .course-sidebar img.course-image-lg {
+            width: 100%;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+        .course-sidebar .price {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        .course-sidebar .price.free {
+            color: var(--success-color);
+        }
+        .course-sidebar .btn-enroll {
+            margin-bottom: 15px;
+        }
+        .course-sidebar .sidebar-meta-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        .course-sidebar .sidebar-meta-item i {
+            margin-right: 10px;
+            color: var(--primary-color);
+            width: 20px; /* For alignment */
+            text-align: center;
+        }
+
+        .course-tabs {
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--gray-color);
+        }
+        .course-tabs button {
+            background: none;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--gray-color);
+            position: relative;
+            transition: color var(--transition-speed);
+        }
+        .course-tabs button.active {
+            color: var(--primary-color);
+        }
+        .course-tabs button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; /* Align with border-bottom of .course-tabs */
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+            animation: fadeIn 0.5s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .course-description-full p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .curriculum-section .chapter {
+            background-color: var(--white-color);
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            overflow: hidden; /* For consistent border radius with header */
+        }
+        .chapter-header {
+            background-color: #f9f9f9; /* Slightly off-white */
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--light-color);
+        }
+        .chapter-header:hover {
+            background-color: #f0f0f0;
+        }
+        .chapter-header h3 {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin: 0;
+        }
+        .chapter-toggle-icon {
+            transition: transform 0.3s ease;
+        }
+        .chapter-header.open .chapter-toggle-icon {
+            transform: rotate(180deg);
+        }
+        .chapter-parts {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .chapter-parts.open {
+           /* max-height will be set by JS */
+        }
+        .chapter-parts ul {
+            padding: 0;
+            margin: 0;
+        }
+        .chapter-parts li {
+            padding: 12px 20px 12px 40px; /* Indent parts */
+            border-bottom: 1px solid var(--light-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color var(--transition-speed);
+        }
+        .chapter-parts li:last-child {
+            border-bottom: none;
+        }
+        .chapter-parts li:hover {
+            background-color: var(--light-color);
+        }
+        .part-name {
+            flex-grow: 1;
+        }
+        .part-name i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+        .part-duration, .part-preview-btn { /* Placeholder for future features */
+            font-size: 0.9em;
+            color: var(--gray-color);
+            margin-left: 15px;
+        }
+        .part-preview-btn {
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .part-document-link {
+            font-size: 0.85em;
+            color: var(--accent-color);
+            margin-left: 10px;
+            text-decoration: underline !important;
+        }
+        .part-document-link i {
+            margin-right: 3px;
+        }
+
+        .instructor-bio-section img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            float: left;
+            margin-right: 20px;
+            margin-bottom: 10px;
+            border: 3px solid var(--secondary-color);
+        }
+        .instructor-bio-section h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .instructor-bio-section p {
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+        .instructor-bio-section::after { /* Clearfix for floated image */
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        /* Loading indicator */
+        #course-detail-loader {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+        }
+        #course-detail-loader .spinner {
+            margin: 0 auto 20px auto;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .course-sidebar {
+                position: static; /* Remove sticky for smaller screens */
+                margin-top: 30px;
+                width: 100%;
+            }
+        }
+        @media (max-width: 768px) {
+            .course-detail-header h1 {
+                font-size: 2.2em;
+            }
+            .course-content-wrapper {
+                flex-direction: column;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="page-loader">
+        <div class="spinner"></div>
+        <p>Đang tải...</p>
+    </div>
+
+    <header>
+        <!-- Header content from index.html (can be made a reusable component with JS) -->
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i> E-Learn
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="index.html#courses-section">Khóa Học</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn btn-secondary">Đăng Nhập</button>
+                <button id="registerBtn" class="btn btn-primary">Đăng Ký</button>
+            </div>
+            <div id="userInfo" class="user-info" style="display:none;">
+                <img id="userAvatar" src="images/default-avatar.png" alt="Avatar" class="avatar">
+                <span id="usernameDisplay"></span>
+                <div class="dropdown">
+                    <button class="dropdown-btn"><i class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-content">
+                        <a href="profile.html" id="profileLink"><i class="fas fa-user"></i> Hồ sơ</a>
+                        <a href="my-courses.html" id="myCoursesLink"><i class="fas fa-book-open-reader"></i> Khóa học của tôi</a>
+                        <a href="create-course.html" id="createCourseLink"><i class="fas fa-plus-circle"></i> Tạo khóa học</a>
+                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+            <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
+    <nav class="mobile-menu">
+         <ul>
+            <li><a href="index.html">Trang Chủ</a></li>
+            <li><a href="index.html#courses-section">Khóa Học</a></li>
+        </ul>
+        <div class="mobile-auth-buttons" style="padding: 15px;">
+        </div>
+    </nav>
+
+    <main id="course-detail-page">
+        <div id="course-detail-loader">
+            <div class="spinner"></div>
+            <p>Đang tải thông tin khóa học...</p>
+        </div>
+
+        <div id="course-detail-content" style="display: none;">
+            <!-- Course Header -->
+            <section class="course-detail-header">
+                <div class="container">
+                    <h1 id="course-title-header"></h1>
+                    <div class="instructor-info">
+                        Được tạo bởi <img id="instructor-avatar-header" src="images/default-avatar.png" alt="Instructor Avatar"> <strong id="instructor-name-header"></strong>
+                    </div>
+                    <div class="course-meta-icons">
+                        <span id="total-students-header"><i class="fas fa-users"></i> </span>
+                        <span id="total-chapters-header"><i class="fas fa-layer-group"></i> </span>
+                        <span id="total-parts-header"><i class="fas fa-list-ul"></i> </span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Content Area -->
+            <div class="container section-padding">
+                <div class="course-content-wrapper">
+                    <!-- Left Column: Tabs (Description, Curriculum, Instructor) -->
+                    <div class="course-main-content">
+                        <div class="course-tabs">
+                            <button class="tab-button active" data-tab="description">Mô Tả</button>
+                            <button class="tab-button" data-tab="curriculum">Nội Dung Khóa Học</button>
+                            <button class="tab-button" data-tab="instructor">Giảng Viên</button>
+                        </div>
+
+                        <div id="description" class="tab-content active course-description-full">
+                            <p id="course-long-description">Loading description...</p>
+                        </div>
+
+                        <div id="curriculum" class="tab-content curriculum-section">
+                            <div style="text-align: right; margin-bottom: 15px;">
+                                <a href="#" id="manage-curriculum-btn" class="btn btn-secondary" style="display: none;">
+                                    <i class="fas fa-cogs"></i> Thay đổi Chương trình học
+                                </a>
+                            </div>
+                            <!-- Nội dung chương/phần hiện tại sẽ vẫn được JS load vào đây -->
+                            <p>Loading curriculum...</p>
+                        </div>
+
+                        <div id="instructor" class="tab-content instructor-bio-section">
+                            <img id="instructor-avatar-bio" src="images/default-avatar.png" alt="Instructor Avatar">
+                            <h3 id="instructor-name-bio"></h3>
+                            <p id="instructor-email-bio"></p>
+                            <p id="instructor-phone-bio"></p>
+                            <p id="instructor-additional-info-bio">Thông tin thêm về giảng viên sẽ được hiển thị ở đây nếu có.</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Sidebar (Image, Price, Enroll Button, Meta) -->
+                    <aside class="course-sidebar">
+                        <img id="course-image-sidebar" src="images/course-placeholder.jpg" alt="Course Image" class="course-image-lg">
+                        <p id="course-short-description" style="margin-bottom: 15px; font-size: 0.9em; color: #555;"></p>
+                        <div id="course-price-sidebar" class="price">Đang tải...</div>
+                        <button id="enroll-button" class="btn btn-primary btn-block btn-enroll">Đăng Ký Học</button>
+                        <button id="edit-course-button" class="btn btn-secondary btn-block" style="display: none; margin-top: 10px;">
+                        <i class="fas fa-edit"></i> Chỉnh Sửa Khóa Học
+                        </button>
+                        <button id="delete-course-button" class="btn btn-danger btn-block" style="display: none; margin-top: 10px;">
+                            <i class="fas fa-trash-alt"></i> Xóa Khóa Học
+                        </button>
+                        <div class="sidebar-meta">
+                            <h4>Thông Tin Khóa Học:</h4>
+                            <div class="sidebar-meta-item"><i class="fas fa-layer-group"></i> <span id="sidebar-chapters-count">0</span> chương</div>
+                            <div class="sidebar-meta-item"><i class="fas fa-list-ul"></i> <span id="sidebar-parts-count">0</span> bài học</div>
+                            <div class="sidebar-meta-item"><i class="fas fa-users"></i> <span id="sidebar-students-count">0</span> học viên</div>
+                            <div class="sidebar-meta-item"><i class="fas fa-globe"></i> Truy cập mọi lúc</div>
+                            <div class="sidebar-meta-item"><i class="fas fa-certificate"></i> Chứng chỉ (nếu có)</div>
+                        </div>
+
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Footer content from index.html -->
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section about">
+                    <h3 class="logo-text"><i class="fas fa-graduation-cap"></i> E-Learn</h3>
+                    <p>
+                        E-Learn là nền tảng học trực tuyến hàng đầu, mang đến cơ hội tiếp cận tri thức
+                        chất lượng cao cho mọi người.
+                    </p>
+                    <div class="contact">
+                        <span><i class="fas fa-phone"></i>   123-456-7890</span>
+                        <span><i class="fas fa-envelope"></i>   info@elearn.com</span>
+                    </div>
+                    <div class="socials">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section links">
+                    <h3>Liên Kết Nhanh</h3>
+                    <ul>
+                        <li><a href="#">Về Chúng Tôi</a></li>
+                        <li><a href="#">Điều Khoản Dịch Vụ</a></li>
+                        <li><a href="#">Chính Sách Bảo Mật</a></li>
+                        <li><a href="#">Hỗ Trợ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section contact-form-footer">
+                    <h3>Liên Hệ</h3>
+                    <form action="#" method="post">
+                        <input type="email" name="email" class="text-input contact-input" placeholder="Địa chỉ email của bạn...">
+                        <textarea rows="3" name="message" class="text-input contact-input" placeholder="Lời nhắn của bạn..."></textarea>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Gửi
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © <span id="currentYear"></span> E-Learn Platform | Designed by AI with Love
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login/Register Modals (from index.html - could be loaded via JS if preferred) -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeLoginModal">×</span>
+            <h2>Đăng Nhập</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Tên đăng nhập:</label>
+                    <input type="text" id="loginUsername" name="UserName" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mật khẩu:</label>
+                    <input type="password" id="loginPassword" name="Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button>
+                <p class="form-message" id="loginMessage"></p>
+                <p class="switch-form">Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeRegisterModal">×</span>
+            <h2>Đăng Ký</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">Tên đăng nhập:</label>
+                    <input type="text" id="registerUsername" name="UserName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" name="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Mật khẩu:</label>
+                    <input type="password" id="registerPassword" name="Password" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Số điện thoại (tùy chọn):</label>
+                    <input type="tel" id="registerPhone" name="Phone">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Đăng Ký</button>
+                <p class="form-message" id="registerMessage"></p>
+                <p class="switch-form">Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script> <!-- Re-use the main script for header/modals -->
+    <script>
+        // Script specific to course-detail.html
+        document.addEventListener('DOMContentLoaded', function() {
+            const API_BASE_URL = 'http://127.0.0.1:8000';
+
+            // --- DOM Elements for Course Detail ---
+            const courseDetailLoader = document.getElementById('course-detail-loader');
+            const courseDetailContent = document.getElementById('course-detail-content');
+
+            const courseTitleHeader = document.getElementById('course-title-header');
+            const instructorAvatarHeader = document.getElementById('instructor-avatar-header');
+            const instructorNameHeader = document.getElementById('instructor-name-header');
+            const totalStudentsHeader = document.getElementById('total-students-header');
+            const totalChaptersHeader = document.getElementById('total-chapters-header');
+            const totalPartsHeader = document.getElementById('total-parts-header');
+
+            const courseImageSidebar = document.getElementById('course-image-sidebar');
+            const courseShortDescription = document.getElementById('course-short-description');
+            const coursePriceSidebar = document.getElementById('course-price-sidebar');
+            const enrollButton = document.getElementById('enroll-button');
+            const editCourseButton = document.getElementById('edit-course-button'); // Get the button
+            const deleteCourseButton = document.getElementById('delete-course-button'); // Get the button
+
+            const sidebarChaptersCount = document.getElementById('sidebar-chapters-count');
+            const sidebarPartsCount = document.getElementById('sidebar-parts-count');
+            const sidebarStudentsCount = document.getElementById('sidebar-students-count');
+
+            const courseLongDescription = document.getElementById('course-long-description');
+            const curriculumTabContent = document.getElementById('curriculum');
+            const instructorAvatarBio = document.getElementById('instructor-avatar-bio');
+            const instructorNameBio = document.getElementById('instructor-name-bio');
+            const instructorEmailBio = document.getElementById('instructor-email-bio');
+            const instructorPhoneBio = document.getElementById('instructor-phone-bio');
+
+            const tabButtons = document.querySelectorAll('.course-tabs .tab-button');
+            const tabContents = document.querySelectorAll('.course-main-content .tab-content');
+
+            let currentCourseId = null;
+            let currentCourseBasicData = null; // To store fetched course data
+
+            // --- COPIED apiRequest function ---
+            async function apiRequest(endpoint, method = 'GET', data = null, token = null) {
+                const config = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                if (token) {
+                    config.headers['Authorization'] = `Bearer ${token}`;
+                }
+                if (data && (method === 'POST' || method === 'PUT' || method === 'DELETE')) { // Added DELETE
+                    config.body = JSON.stringify(data);
+                }
+                 // For DELETE requests, body might not always be needed or allowed by server depending on implementation
+                if (method === 'DELETE' && !data) {
+                    delete config.body;
+                }
+
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                    // For DELETE, a 200 OK or 204 No Content is typical for success
+                    if (method === 'DELETE' && (response.status === 200 || response.status === 204)) {
+                        // Try to parse JSON if content-type suggests it, otherwise return null for 204
+                         if (response.status === 204 || response.headers.get("content-length") === "0") {
+                            return null;
+                         }
+                         // Check content type before assuming JSON for 200 on DELETE
+                         const contentType = response.headers.get("content-type");
+                         if (contentType && contentType.includes("application/json")) {
+                            return await response.json();
+                         }
+                         return { ok: true }; // Or some generic success object if no JSON body
+                    }
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+                        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                    }
+                    if (response.status === 204 || response.headers.get("content-length") === "0") {
+                        return null;
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error(`API request to ${endpoint} failed:`, error);
+                    throw error;
+                }
+            }
+            // --- END COPIED apiRequest function ---
+
+
+            function getCourseIdFromUrl() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('id');
+            }
+
+            async function fetchAndDisplayCourseDetail(courseId) {
+                if (!courseId) {
+                    courseDetailLoader.innerHTML = '<p>Không tìm thấy ID khóa học.</p>';
+                    return;
+                }
+                currentCourseId = courseId; // Set currentCourseId early
+
+                courseDetailLoader.style.display = 'block';
+                courseDetailContent.style.display = 'none';
+
+                try {
+                    const courseBasic = await apiRequest(`/courses/${courseId}`);
+                    currentCourseBasicData = courseBasic; // Store basic data
+
+                    const courseDetail = await apiRequest(`/courses/${courseId}/detail`);
+                    const creator = await apiRequest(`/courses/${courseId}/creator`);
+                    const chapters = await apiRequest(`/courses/${courseId}/chapters`);
+
+                    // Populate Header
+                    if (courseTitleHeader) courseTitleHeader.textContent = courseBasic.CourseName;
+                    if (totalStudentsHeader) totalStudentsHeader.innerHTML = `<i class="fas fa-users"></i> ${courseBasic.NumberOfRegistrations || 0} học viên`;
+
+                    if (creator) {
+                        if (instructorAvatarHeader) instructorAvatarHeader.src = creator.Image || 'images/default-avatar.png';
+                        if (instructorNameHeader) instructorNameHeader.textContent = creator.UserName;
+                    }
+
+                    // Populate Sidebar
+                    if (courseImageSidebar) courseImageSidebar.src = courseBasic.Image || 'images/course-placeholder.jpg';
+                    if (courseShortDescription) courseShortDescription.textContent = courseBasic.Decription || 'Không có mô tả ngắn.';
+                    if (coursePriceSidebar) {
+                        coursePriceSidebar.textContent = courseBasic.Price > 0 ? `$${courseBasic.Price.toFixed(2)}` : 'Miễn phí';
+                        if (courseBasic.Price <= 0) coursePriceSidebar.classList.add('free');
+                    }
+                    if (sidebarStudentsCount) sidebarStudentsCount.textContent = courseBasic.NumberOfRegistrations || 0;
+
+                    // Populate Description Tab
+                    if (courseLongDescription) {
+                         courseLongDescription.textContent = courseDetail.DetailCourse || courseDetail.Decription || 'Không có mô tả chi tiết cho khóa học này.';
+                    }
+
+                    // Populate Instructor Tab
+                    if (creator) {
+                        if(instructorAvatarBio) instructorAvatarBio.src = creator.Image || 'images/default-avatar.png';
+                        if(instructorNameBio) instructorNameBio.textContent = creator.UserName;
+                        if(instructorEmailBio) instructorEmailBio.innerHTML = `<i class="fas fa-envelope"></i> Email: ${creator.Email}`;
+                        if(instructorPhoneBio) instructorPhoneBio.innerHTML = creator.Phone ? `<i class="fas fa-phone"></i> Điện thoại: ${creator.Phone}` : '';
+                    }
+
+                    // Populate Curriculum Tab
+                    let totalPartsCount = 0;
+                    if (chapters && chapters.length > 0) {
+                        if (sidebarChaptersCount) sidebarChaptersCount.textContent = chapters.length;
+                        if (totalChaptersHeader) totalChaptersHeader.innerHTML = `<i class="fas fa-layer-group"></i> ${chapters.length} chương`;
+                        
+                        // Clear previous content before adding new
+                        curriculumTabContent.innerHTML = ''; // Important: Clear "Loading curriculum..." or old content
+                        
+                        // Add the "Manage Curriculum" button container first
+                        const manageBtnContainer = document.createElement('div');
+                        manageBtnContainer.style.textAlign = 'right';
+                        manageBtnContainer.style.marginBottom = '15px';
+                        
+                        const manageCurriculumBtnEl = document.createElement('a');
+                        manageCurriculumBtnEl.id = 'manage-curriculum-btn'; // Ensure this ID matches if used elsewhere
+                        manageCurriculumBtnEl.className = 'btn btn-secondary';
+                        manageCurriculumBtnEl.style.display = 'none'; // Hidden by default
+                        manageCurriculumBtnEl.innerHTML = '<i class="fas fa-cogs"></i> Thay đổi Chương trình học';
+                        manageBtnContainer.appendChild(manageCurriculumBtnEl);
+                        curriculumTabContent.appendChild(manageBtnContainer); // Add to the top of curriculum tab
+
+                        for (const chapter of chapters) {
+                            const chapterElement = await createChapterElement(chapter);
+                            curriculumTabContent.appendChild(chapterElement); // Append chapters after the button
+                            const partsInChapter = chapter.parts ? chapter.parts.length : (await apiRequest(`/chapters/${chapter.ChapterID}/parts`)).length;
+                            totalPartsCount += partsInChapter;
+                        }
+                    } else {
+                        if (sidebarChaptersCount) sidebarChaptersCount.textContent = 0;
+                        if (totalChaptersHeader) totalChaptersHeader.innerHTML = `<i class="fas fa-layer-group"></i> 0 chương`;
+                        
+                        // Clear previous content and add "no content" message along with manage button container
+                        curriculumTabContent.innerHTML = '';
+                        const manageBtnContainer = document.createElement('div');
+                        manageBtnContainer.style.textAlign = 'right';
+                        manageBtnContainer.style.marginBottom = '15px';
+                        const manageCurriculumBtnEl = document.createElement('a');
+                        manageCurriculumBtnEl.id = 'manage-curriculum-btn';
+                        manageCurriculumBtnEl.className = 'btn btn-secondary';
+                        manageCurriculumBtnEl.style.display = 'none';
+                        manageCurriculumBtnEl.innerHTML = '<i class="fas fa-cogs"></i> Thay đổi Chương trình học';
+                        manageBtnContainer.appendChild(manageCurriculumBtnEl);
+                        curriculumTabContent.appendChild(manageBtnContainer);
+                        
+                        const noContentPara = document.createElement('p');
+                        noContentPara.textContent = 'Khóa học này chưa có nội dung chương mục.';
+                        curriculumTabContent.appendChild(noContentPara);
+                    }
+                    if (sidebarPartsCount) sidebarPartsCount.textContent = totalPartsCount;
+                    if (totalPartsHeader) totalPartsHeader.innerHTML = `<i class="fas fa-list-ul"></i> ${totalPartsCount} bài học`;
+
+                    // --- Show Edit/Delete/Manage Curriculum Buttons if user is creator ---
+                    const loggedInUserData = JSON.parse(localStorage.getItem('userData'));
+                    // editCourseButton and deleteCourseButton are already defined from the top of the script
+                    const manageCurriculumBtnFromDOM = document.getElementById('manage-curriculum-btn'); // Get the one we just added
+
+                    if (loggedInUserData && creator && loggedInUserData.UserID === creator.UserID) {
+                        if (editCourseButton) {
+                            editCourseButton.style.display = 'block';
+                            editCourseButton.onclick = () => { window.location.href = `edit-course.html?id=${courseBasic.CourseID}`; };
+                        }
+                        if (deleteCourseButton) {
+                            deleteCourseButton.style.display = 'block';
+                            deleteCourseButton.onclick = () => handleDeleteCourse(courseBasic.CourseID, courseBasic.CourseName);
+                        }
+                        if (manageCurriculumBtnFromDOM) { // Check if the button was found in DOM
+                            manageCurriculumBtnFromDOM.style.display = 'inline-block';
+                            manageCurriculumBtnFromDOM.href = `manage-curriculum.html?courseId=${courseBasic.CourseID}`;
+                        }
+                    } else {
+                        if (editCourseButton) editCourseButton.style.display = 'none';
+                        if (deleteCourseButton) deleteCourseButton.style.display = 'none';
+                        if (manageCurriculumBtnFromDOM) manageCurriculumBtnFromDOM.style.display = 'none';
+                    }
+
+                    courseDetailLoader.style.display = 'none';
+                    courseDetailContent.style.display = 'block';
+                    checkAndUpdateEnrollmentStatus(); // Check enrollment after all data is loaded
+
+                } catch (error) {
+                    console.error('Error fetching course details:', error);
+                    courseDetailLoader.innerHTML = `<p class="error-message">Không thể tải thông tin khóa học. Lỗi: ${error.message}. Vui lòng thử lại sau.</p>`;
+                }
+            }
+            async function createChapterElement(chapter) {
+                const chapterDiv = document.createElement('div');
+                chapterDiv.className = 'chapter';
+                const header = document.createElement('div');
+                header.className = 'chapter-header';
+                header.innerHTML = `<h3>${chapter.ChapterName}</h3><i class="fas fa-chevron-down chapter-toggle-icon"></i>`;
+                const partsListContainer = document.createElement('div');
+                partsListContainer.className = 'chapter-parts';
+                const partsUl = document.createElement('ul');
+                partsListContainer.appendChild(partsUl);
+                chapterDiv.appendChild(header);
+                chapterDiv.appendChild(partsListContainer);
+
+                const parts = chapter.parts || await apiRequest(`/chapters/${chapter.ChapterID}/parts`);
+                chapter.parts = parts; // Store for counting
+
+                if (parts && parts.length > 0) {
+                    parts.forEach(part => {
+                        const partLi = document.createElement('li');
+                        let documentLinkHTML = '';
+                        if (part.Document) {
+                            const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(part.Document) || /youtu\.be|youtube\.com/i.test(part.Document);
+                            const iconClass = isVideo ? 'fa-video' : 'fa-file-alt';
+                            documentLinkHTML = `<a href="${part.Document}" target="_blank" class="part-document-link"><i class="fas ${iconClass}"></i> ${isVideo ? 'Xem Video' : 'Tài liệu'}</a>`;
+                        }
+                        partLi.innerHTML = `<span class="part-name"><i class="fas fa-play-circle"></i> ${part.PartName}</span>${documentLinkHTML}`;
+                        partsUl.appendChild(partLi);
+                    });
+                } else {
+                    partsUl.innerHTML = '<li>Chương này chưa có bài học.</li>';
+                }
+
+                header.addEventListener('click', () => {
+                    const isOpen = partsListContainer.classList.toggle('open');
+                    header.classList.toggle('open', isOpen);
+                    partsListContainer.style.maxHeight = isOpen ? partsListContainer.scrollHeight + "px" : "0";
+                });
+                return chapterDiv;
+            }
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    const activeTabContent = document.getElementById(button.dataset.tab);
+                    if (activeTabContent) activeTabContent.classList.add('active');
+                });
+            });
+
+            if (enrollButton) {
+                enrollButton.addEventListener('click', async () => {
+                    const userData = JSON.parse(localStorage.getItem('userData'));
+                    if (!userData) {
+                        alert('Vui lòng đăng nhập để đăng ký khóa học.');
+                        const loginModalEl = document.getElementById('loginModal');
+                        if (typeof openModal === 'function') openModal(loginModalEl);
+                        else if (loginModalEl) loginModalEl.classList.add('show');
+                        return;
+                    }
+                    if (!currentCourseBasicData) {
+                        alert('Thông tin khóa học chưa được tải xong.');
+                        return;
+                    }
+                    try {
+                        enrollButton.disabled = true;
+                        enrollButton.textContent = 'Đang xử lý...';
+                        await apiRequest('/registered-courses/', 'POST', { CourseID: currentCourseBasicData.CourseID, UserID: userData.UserID });
+                        alert('Đăng ký khóa học thành công!');
+                        enrollButton.textContent = 'Đã Đăng Ký';
+                        currentCourseBasicData.NumberOfRegistrations = (currentCourseBasicData.NumberOfRegistrations || 0) + 1;
+                        if (totalStudentsHeader) totalStudentsHeader.innerHTML = `<i class="fas fa-users"></i> ${currentCourseBasicData.NumberOfRegistrations} học viên`;
+                        if (sidebarStudentsCount) sidebarStudentsCount.textContent = currentCourseBasicData.NumberOfRegistrations;
+                    } catch (error) {
+                        console.error("Enrollment error:", error);
+                        if (error.message && error.message.toLowerCase().includes("already registered")) {
+                             alert('Bạn đã đăng ký khóa học này rồi.');
+                             enrollButton.textContent = 'Đã Đăng Ký';
+                        } else {
+                            alert(`Đăng ký thất bại: ${error.message}.`);
+                            enrollButton.textContent = 'Đăng Ký Học';
+                            enrollButton.disabled = false;
+                        }
+                    }
+                });
+            }
+
+            async function checkAndUpdateEnrollmentStatus() {
+                const userData = JSON.parse(localStorage.getItem('userData'));
+                if (!userData || !currentCourseId) {
+                    if (enrollButton) { enrollButton.textContent = 'Đăng Ký Học'; enrollButton.disabled = false; }
+                    return;
+                }
+                try {
+                    const registeredCourses = await apiRequest(`/users/${userData.UserID}/registered-courses`);
+                    const isRegistered = registeredCourses.some(reg => reg.CourseID === parseInt(currentCourseId));
+                    if (enrollButton) {
+                        enrollButton.textContent = isRegistered ? 'Đã Đăng Ký' : 'Đăng Ký Học';
+                        enrollButton.disabled = isRegistered;
+                    }
+                } catch (error) {
+                    console.warn("Could not check enrollment status:", error);
+                    if (enrollButton) { enrollButton.textContent = 'Đăng Ký Học'; enrollButton.disabled = false; }
+                }
+            }
+
+            async function handleDeleteCourse(courseId, courseName) { // Moved inside DOMContentLoaded
+                if (!confirm(`Bạn có chắc chắn muốn xóa khóa học "${courseName}" không? Hành động này không thể hoàn tác.`)) {
+                    return;
+                }
+                // deleteCourseButton is already defined globally in this script scope
+                if(deleteCourseButton) {
+                    deleteCourseButton.disabled = true;
+                    deleteCourseButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+                }
+                try {
+                    await apiRequest(`/courses/${courseId}`, 'DELETE');
+                    alert(`Khóa học "${courseName}" đã được xóa thành công.`);
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    alert(`Xóa khóa học thất bại: ${error.message}. Có thể khóa học đã có người đăng ký.`);
+                    if(deleteCourseButton) {
+                        deleteCourseButton.disabled = false;
+                        deleteCourseButton.innerHTML = '<i class="fas fa-trash-alt"></i> Xóa Khóa Học';
+                    }
+                }
+            }
+
+            // --- Initial Load ---
+            const courseIdToLoad = getCourseIdFromUrl();
+            if (courseIdToLoad) {
+                fetchAndDisplayCourseDetail(courseIdToLoad);
+            } else {
+                if (courseDetailLoader) courseDetailLoader.innerHTML = '<p>Không tìm thấy khóa học. Vui lòng kiểm tra lại đường dẫn.</p>';
+            }
+
+            const currentYearEl = document.getElementById('currentYear');
+            if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
+            window.addEventListener('load', () => {
+                const globalPageLoader = document.getElementById('page-loader');
+                if (globalPageLoader) {
+                    globalPageLoader.style.opacity = '0';
+                    setTimeout(() => { globalPageLoader.style.display = 'none'; }, 500);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
