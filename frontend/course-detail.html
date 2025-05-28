@@ -755,7 +755,7 @@
                         if (part.Document) {
                             const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(part.Document) || /youtu\.be|youtube\.com/i.test(part.Document);
                             const iconClass = isVideo ? 'fa-video' : 'fa-file-alt';
-                            documentLinkHTML = `<a href="${part.Document}" target="_blank" class="part-document-link"><i class="fas ${iconClass}"></i> ${isVideo ? 'Xem Video' : 'Tài liệu'}</a>`;
+                        
                         }
                         partLi.innerHTML = `<span class="part-name"><i class="fas fa-play-circle"></i> ${part.PartName}</span>${documentLinkHTML}`;
                         partsUl.appendChild(partLi);

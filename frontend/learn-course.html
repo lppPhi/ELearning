@@ -38,7 +38,39 @@
 </head>
 <body>
     <div id="page-loader"> <div class="spinner"></div><p>Đang tải...</p> </div>
-    <header> <!-- Header HTML của bạn --> </header>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i> E-Learn
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Trang Chủ</a></li>
+                    <li><a href="#courses-section">Khóa Học</a></li>
+                    <!-- Sẽ thêm khi có trang tương ứng -->
+                    <!-- <li><a href="my-courses.html">Khóa Học Của Tôi</a></li> -->
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn btn-secondary">Đăng Nhập</button>
+                <button id="registerBtn" class="btn btn-primary">Đăng Ký</button>
+            </div>
+            <div id="userInfo" class="user-info" style="display:none;">
+                <img id="userAvatar" src="images/default-avatar.png" alt="Avatar" class="avatar">
+                <span id="usernameDisplay"></span>
+                <div class="dropdown">
+                    <button class="dropdown-btn"><i class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-content">
+                        <a href="profile.html" id="profileLink"><i class="fas fa-user"></i> Hồ sơ</a>
+                        <a href="my-courses.html" id="myCoursesLink"><i class="fas fa-book-open-reader"></i> Khóa học của tôi</a>
+                        <a href="create-course.html" id="createCourseLink"><i class="fas fa-plus-circle"></i> Tạo khóa học</a>
+                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+            <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
     <nav class="mobile-menu"> <!-- Mobile Menu HTML của bạn --> </nav>
 
     <main>
@@ -67,7 +99,51 @@
         </div>
     </main>
 
-    <footer> <!-- Footer HTML của bạn --> </footer>
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section about">
+                    <h3 class="logo-text"><i class="fas fa-graduation-cap"></i> E-Learn</h3>
+                    <p>
+                        E-Learn là nền tảng học trực tuyến hàng đầu, mang đến cơ hội tiếp cận tri thức
+                        chất lượng cao cho mọi người.
+                    </p>
+                    <div class="contact">
+                        <span><i class="fas fa-phone"></i>   123-456-7890</span>
+                        <span><i class="fas fa-envelope"></i>   info@elearn.com</span>
+                    </div>
+                    <div class="socials">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section links">
+                    <h3>Liên Kết Nhanh</h3>
+                    <ul>
+                        <li><a href="#">Về Chúng Tôi</a></li>
+                        <li><a href="#">Điều Khoản Dịch Vụ</a></li>
+                        <li><a href="#">Chính Sách Bảo Mật</a></li>
+                        <li><a href="#">Hỗ Trợ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section contact-form-footer">
+                    <h3>Liên Hệ</h3>
+                    <form action="#" method="post">
+                        <input type="email" name="email" class="text-input contact-input" placeholder="Địa chỉ email của bạn...">
+                        <textarea rows="3" name="message" class="text-input contact-input" placeholder="Lời nhắn của bạn..."></textarea>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Gửi
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © <span id="currentYear"></span> E-Learn Platform | Designed by AI with Love
+            </div>
+        </div>
+    </footer>
     <div id="loginModal" class="modal"> <!-- Login Modal HTML của bạn --> </div>
     <div id="registerModal" class="modal"> <!-- Register Modal HTML của bạn --> </div>
 

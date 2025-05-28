@@ -81,7 +81,39 @@
 </head>
 <body>
     <div id="page-loader"> /* ... */ </div>
-    <header> /* ... Copy header from index.html ... */ </header>
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i> E-Learn
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Trang Chủ</a></li>
+                    <li><a href="#courses-section">Khóa Học</a></li>
+                    <!-- Sẽ thêm khi có trang tương ứng -->
+                    <!-- <li><a href="my-courses.html">Khóa Học Của Tôi</a></li> -->
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="loginBtn" class="btn btn-secondary">Đăng Nhập</button>
+                <button id="registerBtn" class="btn btn-primary">Đăng Ký</button>
+            </div>
+            <div id="userInfo" class="user-info" style="display:none;">
+                <img id="userAvatar" src="images/default-avatar.png" alt="Avatar" class="avatar">
+                <span id="usernameDisplay"></span>
+                <div class="dropdown">
+                    <button class="dropdown-btn"><i class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-content">
+                        <a href="profile.html" id="profileLink"><i class="fas fa-user"></i> Hồ sơ</a>
+                        <a href="my-courses.html" id="myCoursesLink"><i class="fas fa-book-open-reader"></i> Khóa học của tôi</a>
+                        <a href="create-course.html" id="createCourseLink"><i class="fas fa-plus-circle"></i> Tạo khóa học</a>
+                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+            <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+    </header>
     <nav class="mobile-menu"> /* ... Copy mobile menu from index.html ... */ </nav>
 
     <main>
