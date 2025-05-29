@@ -230,23 +230,20 @@
                     return;
                 }
                 try {
-                    displayFormMessage(globalFormMessageEl, 'Đang tạo khóa học...', true, 0);
-                    const createdCourse = await apiRequest('/courses/', 'POST', coursePayload);
-                    displayFormMessage(globalFormMessageEl, `Khóa học "${createdCourse.CourseName}" đã tạo thành công! Chuyển hướng...`, true, 3000);
-                    createCourseFormEl.reset();
-                    courseImagePreviewEl.style.display = 'none';
-                    courseImagePreviewEl.src = '#';
-                    courseImageToSaveUrlEl.value = '';
-                    setTimeout(() => { window.location.href = `course-detail.html?id=${createdCourse.CourseID}`; }, 3000);
-                } catch (error) {
-                    displayFormMessage(globalFormMessageEl, `Lỗi tạo khóa học: ${error.message}`, false);
-                } finally {
-                     // Không reset nút ở đây nếu đã chuyển hướng thành công
-                    if (window.location.href.indexOf(`course-detail.html?id=`) === -1) {
-                        submitCreateCourseBtnEl.disabled = false;
-                        submitCreateCourseBtnEl.innerHTML = originalButtonText;
-                    }
-                }
+    displayFormMessage(globalFormMessageEl, 'Đang tạo khóa học...', true, 0);
+    const createdCourse = await apiRequest('/courses/', 'POST', coursePayload);
+
+    // 👉 Chuyển hướng NGAY sau khi tạo thành công
+    window.location.href = `course-detail.html?id=${createdCourse.CourseID}`;
+} catch (error) {
+    displayFormMessage(globalFormMessageEl, `Lỗi tạo khóa học: ${error.message}`, false);
+} finally {
+    if (window.location.href.indexOf(`course-detail.html?id=`) === -1) {
+        submitCreateCourseBtnEl.disabled = false;
+        submitCreateCourseBtnEl.innerHTML = originalButtonText;
+    }
+}
+
             });
 
             checkUserLogin();
