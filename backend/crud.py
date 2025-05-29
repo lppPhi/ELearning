@@ -4,25 +4,12 @@ import models, schemas
 from datetime import datetime
 from typing import Optional, List
 
-# --- Cấu hình Hashing Password (ĐÃ BỎ) ---
-# from passlib.context import CryptContext
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-# === USER CRUD FUNCTIONS ===
-
-# def verify_password(plain_password: str, hashed_password: str) -> bool: # Bỏ
-#     return pwd_context.verify(plain_password, hashed_password)
-
-# def get_password_hash(password: str) -> str: # Bỏ
-#     return pwd_context.hash(password)
-
 def create_user(db: Session, user: schemas.UserCreate) -> models.User:
-    # Bỏ hashing, lưu mật khẩu plain text
+
     db_user = models.User(
         UserName=user.UserName,
         Email=user.Email,
-        Password=user.Password, # LƯU PLAIN TEXT
+        Password=user.Password,
         Phone=user.Phone,
         Image=user.Image
     )
@@ -34,18 +21,16 @@ def create_user(db: Session, user: schemas.UserCreate) -> models.User:
 def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate) -> Optional[models.User]:
     db_user = db.query(models.User).filter(models.User.UserID == user_id).first()
     if db_user:
-        update_data = user_update.model_dump(exclude_unset=True) # Pydantic v2
-
-        # Nếu có trường "Password" trong update_data và nó có giá trị,
-        # thì nó sẽ được cập nhật trực tiếp (plain text) bởi vòng lặp bên dưới.
-        # Không cần xử lý đặc biệt cho password ở đây nữa.
-        
+        update_data = user_update.model_dump(exclude_unset=True)
+        print("🔍 UPDATE DATA:", update_data)  # <== THÊM LOG
         for key, value in update_data.items():
             setattr(db_user, key, value)
-        
         db.commit()
         db.refresh(db_user)
+        print("✅ DB_USER IMAGE:", db_user.Image)  # <== THÊM LOG
     return db_user
+
+
 
 def delete_user(db: Session, user_id: int) -> Optional[models.User]:
     db_user = db.query(models.User).filter(models.User.UserID == user_id).first()

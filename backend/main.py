@@ -4,27 +4,29 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import models
 import schemas
-import crud # crud.py đã được sửa để không dùng passlib (hoặc dùng passlib tùy theo lựa chọn cuối cùng của bạn)
+import crud
 from database import SessionLocal, engine
 from typing import List, Optional
 import os
 import shutil
 import uuid
 
-# models.Base.metadata.create_all(bind=engine) # Comment lại nếu dùng Alembic hoặc chỉ chạy 1 lần
-
 app = FastAPI(title="E-Learning API", version="1.0.0")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 UPLOAD_DIRECTORY = os.path.join(STATIC_DIR, "uploads")
-VIDEO_DIRECTORY = os.path.join(UPLOAD_DIRECTORY, "videos") # Hoặc một tên chung hơn như "files"
-os.makedirs(VIDEO_DIRECTORY, exist_ok=True) # Đảm bảo thư mục tồn tại
+VIDEO_DIRECTORY = os.path.join(UPLOAD_DIRECTORY, "videos")
+AVATAR_DIRECTORY = os.path.join(UPLOAD_DIRECTORY, "avatars")
+
+os.makedirs(VIDEO_DIRECTORY, exist_ok=True)
+os.makedirs(AVATAR_DIRECTORY, exist_ok=True)
+
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Trong production, nên giới hạn lại
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,7 +39,23 @@ def get_db():
     finally:
         db.close()
 
-# === USER ENDPOINTS ===
+@app.post("/uploadavatar/")
+async def upload_avatar(file: UploadFile = File(...)):
+    ext = file.filename.split(".")[-1].lower()  # Ép phần mở rộng về chữ thường
+    filename = f"{uuid.uuid4().hex}.{ext}"      # Tạo tên file duy nhất
+    file_path = os.path.join(STATIC_DIR, "uploads", "avatars", filename)
+
+    with open(file_path, "wb") as buffer:
+        content = await file.read()
+        buffer.write(content)
+
+    return {
+        "file_name": filename,
+        "file_url": f"/static/uploads/avatars/{filename}"
+    }
+
+
+
 @app.post("/users/", response_model=schemas.UserInfo, tags=["Users"])
 def create_user_endpoint(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user_by_email = crud.get_user_by_email(db, email=user.Email)

@@ -239,47 +239,59 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateUserUI(userData) {
-        if (userData) {
-            if (authButtonsDiv) authButtonsDiv.style.display = 'none';
-            if (userInfoDiv) userInfoDiv.style.display = 'flex';
-            if (usernameDisplay) usernameDisplay.textContent = userData.UserName;
-            if (userAvatar) userAvatar.src = userData.Image || 'images/default-avatar.png';
+    const fallbackAvatar = `${API_BASE_URL}/static/uploads/avatars/nophoto.png`;
 
-            // Update mobile menu auth
-            if(mobileAuthButtonsContainer) {
-                mobileAuthButtonsContainer.innerHTML = `
-                    <div style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">
-                        <img src="${userData.Image || 'images/default-avatar.png'}" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-bottom: 5px;">
-                        <p style="font-weight: bold;">${userData.UserName}</p>
-                    </div>
-                    <a href="profile.html" class="btn btn-secondary" style="margin-bottom:10px;">Hồ sơ</a>
-                    <a href="my-courses.html" class="btn btn-secondary" style="margin-bottom:10px;">Khóa học của tôi</a>
-                    <a href="create-course.html" class="btn btn-secondary" style="margin-bottom:10px;">Tạo khóa học</a>
-                    <button id="mobileLogoutBtn" class="btn btn-primary">Đăng Xuất</button>
-                `;
-                const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-                if(mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', handleLogout);
-            }
+    if (userData) {
+        const avatarURL = userData.Image ? `${API_BASE_URL}${userData.Image}` : fallbackAvatar;
 
-        } else { // Logged out state
-            if (authButtonsDiv) authButtonsDiv.style.display = 'flex';
-            if (userInfoDiv) userInfoDiv.style.display = 'none';
-            if (dropdownContent && dropdownContent.classList.contains('show')) {
-                 dropdownContent.classList.remove('show');
-            }
-             // Update mobile menu auth
-            if(mobileAuthButtonsContainer) {
-                mobileAuthButtonsContainer.innerHTML = `
-                    <button id="mobileLoginBtn" class="btn btn-secondary" style="margin-bottom:10px;">Đăng Nhập</button>
-                    <button id="mobileRegisterBtn" class="btn btn-primary">Đăng Ký</button>
-                `;
-                const mobileLoginBtn = document.getElementById('mobileLoginBtn');
-                const mobileRegisterBtn = document.getElementById('mobileRegisterBtn');
-                if(mobileLoginBtn) mobileLoginBtn.addEventListener('click', () => { openModal(loginModal); closeMobileMenu(); });
-                if(mobileRegisterBtn) mobileRegisterBtn.addEventListener('click', () => { openModal(registerModal); closeMobileMenu(); });
-            }
+        if (authButtonsDiv) authButtonsDiv.style.display = 'none';
+        if (userInfoDiv) userInfoDiv.style.display = 'flex';
+        if (usernameDisplay) usernameDisplay.textContent = userData.UserName;
+        if (userAvatar) {
+            userAvatar.src = avatarURL;
+            userAvatar.onerror = function () {
+                this.onerror = null;
+                this.src = fallbackAvatar;
+            };
+        }
+
+        // Mobile menu user info
+        if (mobileAuthButtonsContainer) {
+            mobileAuthButtonsContainer.innerHTML = `
+                <div style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">
+                    <img src="${avatarURL}" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; margin-bottom: 5px;" onerror="this.src='${fallbackAvatar}'">
+                    <p style="font-weight: bold;">${userData.UserName}</p>
+                </div>
+                <a href="profile.html" class="btn btn-secondary" style="margin-bottom:10px;">Hồ sơ</a>
+                <a href="my-courses.html" class="btn btn-secondary" style="margin-bottom:10px;">Khóa học của tôi</a>
+                <a href="create-course.html" class="btn btn-secondary" style="margin-bottom:10px;">Tạo khóa học</a>
+                <button id="mobileLogoutBtn" class="btn btn-primary">Đăng Xuất</button>
+            `;
+            const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+            if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', handleLogout);
+        }
+
+    } else {
+        // Logged out UI
+        if (authButtonsDiv) authButtonsDiv.style.display = 'flex';
+        if (userInfoDiv) userInfoDiv.style.display = 'none';
+        if (dropdownContent && dropdownContent.classList.contains('show')) {
+            dropdownContent.classList.remove('show');
+        }
+
+        if (mobileAuthButtonsContainer) {
+            mobileAuthButtonsContainer.innerHTML = `
+                <button id="mobileLoginBtn" class="btn btn-secondary" style="margin-bottom:10px;">Đăng Nhập</button>
+                <button id="mobileRegisterBtn" class="btn btn-primary">Đăng Ký</button>
+            `;
+            const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+            const mobileRegisterBtn = document.getElementById('mobileRegisterBtn');
+            if (mobileLoginBtn) mobileLoginBtn.addEventListener('click', () => { openModal(loginModal); closeMobileMenu(); });
+            if (mobileRegisterBtn) mobileRegisterBtn.addEventListener('click', () => { openModal(registerModal); closeMobileMenu(); });
         }
     }
+}
+
 
     function handleLogout() {
         localStorage.removeItem('userToken');
