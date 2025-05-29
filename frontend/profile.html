@@ -4,10 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hồ Sơ Cá Nhân</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> <!-- Make sure style.css exists and has your variables -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Basic CSS Variables (assuming these are in style.css but for completeness) */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --white-color: #fff;
+            --light-color: #f8f9fa;
+            --gray-color: #ced4da;
+            --border-radius: 5px;
+            --box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            --font-family: 'Poppins', sans-serif;
+        }
+        body { font-family: var(--font-family); margin: 0; background-color: #f4f7f6; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 15px; }
+        .btn { padding: 10px 15px; border: none; border-radius: var(--border-radius); cursor: pointer; text-decoration: none; display: inline-block; font-size: 1em;}
+        .btn-primary { background-color: var(--primary-color); color: var(--white-color); }
+        .btn-secondary { background-color: var(--secondary-color); color: var(--white-color); }
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--primary-color); animation: spin 1s ease infinite; margin: 0 auto 10px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--white-color); z-index: 9999; display: flex; flex-direction:column; align-items: center; justify-content: center; opacity:1; transition: opacity 0.5s ease;}
+
+        /* Profile specific styles from your prompt */
         .profile-container { max-width: 700px; margin: 40px auto; padding: 30px; background-color: var(--white-color); border-radius: var(--border-radius); box-shadow: var(--box-shadow); }
         .profile-container h1 { text-align: center; color: var(--primary-color); margin-bottom: 30px; }
         .profile-header { text-align: center; margin-bottom: 30px; }
@@ -15,17 +38,64 @@
         .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
         .profile-avatar-container .change-avatar-btn { position: absolute; bottom: 0; left: 0; width: 100%; background-color: rgba(0,0,0,0.6); color: white; text-align: center; padding: 8px 0; font-size: 0.9em; cursor: pointer; opacity: 0; transition: opacity 0.3s ease; }
         .profile-avatar-container:hover .change-avatar-btn { opacity: 1; }
-        #avatarUploadInput { display: none; }
+        #avatarUpload { display: none; } /* ID for file input in this version */
         .profile-username { font-size: 1.5em; font-weight: 600; margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 20px; }
         .form-group label { font-weight: 600; display: block; margin-bottom: 8px;}
-        .form-group input.form-control, .form-group textarea.form-control { width: 100%; padding: 10px; border: 1px solid var(--gray-color); border-radius: var(--border-radius); font-size: 1em; font-family: var(--font-family); }
+        .form-group input.form-control, .form-group textarea.form-control { width: 100%; padding: 10px; border: 1px solid var(--gray-color); border-radius: var(--border-radius); font-size: 1em; font-family: var(--font-family); box-sizing: border-box; }
         .form-group input[readonly].form-control { background-color: var(--light-color); cursor: not-allowed; }
+        .form-text.text-muted { font-size:0.85em; color: #6c757d; display: block; margin-top: 5px;}
         .form-message { text-align: center; margin-top: 15px; font-size: 0.9em; min-height: 1.2em; }
         .form-message.success { color: var(--success-color); }
         .form-message.error { color: var(--error-color); }
-        .loader-container, #auth-required-profile { text-align: center; padding: 40px; }
-        #auth-required-profile { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh;}
+        .loader-container { text-align: center; padding: 40px; }
+        #auth-required-profile { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; text-align: center; padding: 40px;}
         #auth-required-profile i { font-size: 2.5em; color: var(--gray-color); margin-bottom: 15px;}
+        #auth-required-profile p a { color: var(--primary-color); text-decoration: underline;}
+
+        /* Header Styles (Simplified placeholder) */
+        header { background-color: var(--white-color); box-shadow: var(--box-shadow); padding: 15px 0; position: sticky; top: 0; z-index: 1000;}
+        header .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8em; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        nav ul { list-style: none; padding: 0; margin: 0; display: flex; }
+        nav ul li { margin-left: 20px; }
+        nav ul li a { text-decoration: none; color: #333; font-weight: 500; }
+        nav ul li a.active { color: var(--primary-color); }
+        .auth-buttons { display: flex; } /* Default, JS will hide if user logged in */
+        .auth-buttons button { margin-left: 10px; }
+        .user-info { display: none; align-items: center; } /* Default hidden, JS shows */
+        .user-info .avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover; border: 1px solid var(--gray-color);}
+        #usernameDisplay { font-weight: 500; margin-right: 5px; }
+        .user-info .dropdown { position: relative; }
+        .user-info .dropdown-btn { background: none; border: none; font-size: 0.9em; cursor: pointer; padding: 5px; color: #555; }
+        .user-info .dropdown-content { display: none; position: absolute; right: 0; top: 100%; margin-top:5px; background-color: var(--white-color); box-shadow: var(--box-shadow); border-radius: var(--border-radius); z-index: 100; min-width: 200px; border: 1px solid var(--light-color); }
+        .user-info .dropdown-content a { display: block; padding: 12px 18px; text-decoration: none; color: #333; font-size: 0.95em; }
+        .user-info .dropdown-content a i { margin-right: 10px; width: 16px; text-align: center;}
+        .user-info .dropdown-content a:hover { background-color: var(--light-color); }
+        .user-info .dropdown-content a.active { background-color: var(--primary-color); color: var(--white-color); }
+        .mobile-menu-toggle { display: none; background: none; border: none; font-size: 1.5em; cursor: pointer; }
+        /* Mobile Menu (basic, can be expanded in style.css) */
+        .mobile-menu { display: none; background-color: var(--white-color); box-shadow: var(--box-shadow); padding: 15px 0;}
+        .mobile-menu ul { list-style: none; padding: 0; margin: 0; text-align: center;}
+        .mobile-menu ul li { margin-bottom: 10px;}
+        .mobile-menu ul li a { text-decoration: none; color: #333; display: block; padding: 10px;}
+        .mobile-menu .mobile-auth-buttons .btn { display: block; margin: 10px auto; width: 80%; text-align: center;}
+
+
+        /* Footer Styles (Simplified placeholder) */
+        footer { background-color: #333; color: var(--white-color); padding: 30px 0; margin-top: 40px; text-align: center; }
+        .footer-bottom { padding-top: 20px; font-size: 0.9em; }
+
+        /* Modal Styles (Simplified placeholder) */
+        .modal { display: none; position: fixed; z-index: 1010; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background-color: var(--white-color); padding: 30px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); width: 90%; max-width: 450px; position: relative; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.8em; font-weight: bold; cursor: pointer; color: #777; }
+        .close-btn:hover { color: #333; }
+        .btn-block { width: 100%; display: block; }
+        .switch-form { text-align:center; margin-top:15px; font-size: 0.9em; }
+        .switch-form a { color: var(--primary-color); text-decoration: none; }
+        .switch-form a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -40,52 +110,53 @@
                     <li><a href="my-courses.html">Khóa Học Của Tôi</a></li>
                 </ul>
             </nav>
-            <div class="auth-buttons" style="display: flex;">
+            <div class="auth-buttons"> <!-- JS will hide these if user is logged in -->
                 <button id="loginBtn" class="btn btn-secondary">Đăng Nhập</button>
                 <button id="registerBtn" class="btn btn-primary">Đăng Ký</button>
             </div>
             <div id="userInfo" class="user-info" style="display:none;">
-                <img id="userAvatar" src="images/nophoto.png" alt="Avatar" class="avatar">
+                <img id="userAvatar" src="images/default-avatar.png" alt="Avatar" class="avatar">
                 <span id="usernameDisplay"></span>
                 <div class="dropdown">
                     <button class="dropdown-btn"><i class="fas fa-chevron-down"></i></button>
                     <div class="dropdown-content">
-                        <a href="profile.html" id="profileLink" class="active"><i class="fas fa-user"></i> Hồ sơ</a>
+                        <a href="profile.html" id="profileLink"><i class="fas fa-user"></i> Hồ sơ</a>
                         <a href="my-courses.html" id="myCoursesLink"><i class="fas fa-book-open-reader"></i> Khóa học của tôi</a>
                         <a href="create-course.html" id="createCourseLink"><i class="fas fa-plus-circle"></i> Tạo khóa học</a>
-                        <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                        <a href="index.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
                     </div>
                 </div>
             </div>
             <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
         </div>
     </header>
-    <nav class="mobile-menu">
+    <nav class="mobile-menu"> <!-- JS will toggle this -->
          <ul>
             <li><a href="index.html">Trang Chủ</a></li>
             <li><a href="index.html#courses-section">Khóa Học</a></li>
             <li><a href="my-courses.html">Khóa Học Của Tôi</a></li>
             <li><a href="profile.html" class="active">Hồ sơ</a></li>
         </ul>
-        <div class="mobile-auth-buttons" style="padding: 15px;"></div>
+        <div class="mobile-auth-buttons" style="padding: 15px;">
+             <!-- Auth buttons will be cloned here by script.js for mobile -->
+        </div>
     </nav>
 
     <main>
         <div class="profile-container">
             <h1>Hồ Sơ Cá Nhân</h1>
             <div id="profile-loader" class="loader-container">
-                <div class="spinner"></div> <p>Đang tải thông tin...</p>
+                <div class="spinner"></div>
+                <p>Đang tải thông tin...</p>
             </div>
             <div id="profile-content" style="display: none;">
                 <div class="profile-header">
                     <div class="profile-avatar-container">
-                        <img id="profileAvatarDisplay" src="http://127.0.0.1:8000/static/uploads/avatars/nophoto.png" alt="Ảnh đại diện">
-
-
-                        <label for="avatarUploadInput" class="change-avatar-btn">
+                        <img id="profileAvatarDisplay" src="images/nophoto.png" alt="Ảnh đại diện">
+                        <label for="avatarUpload" class="change-avatar-btn">
                             <i class="fas fa-camera"></i> Thay đổi
                         </label>
-                        <input type="file" id="avatarUploadInput" accept="image/*">
+                        <input type="file" id="avatarUpload" accept="image/*">
                     </div>
                     <p id="profileUsernameDisplay" class="profile-username">Tên đăng nhập</p>
                 </div>
@@ -94,7 +165,7 @@
                     <div class="form-group">
                         <label for="profileUsernameField">Tên đăng nhập</label>
                         <input type="text" id="profileUsernameField" name="UserName" class="form-control" readonly>
-                         <small class="form-text text-muted" style="font-size:0.85em; color: #6c757d;">Không thể thay đổi tên đăng nhập.</small>
+                         <small class="form-text text-muted">Không thể thay đổi tên đăng nhập.</small>
                     </div>
                     <div class="form-group">
                         <label for="profileEmail">Email <span style="color:red;">*</span></label>
@@ -104,7 +175,7 @@
                         <label for="profilePhone">Số điện thoại</label>
                         <input type="tel" id="profilePhone" name="Phone" class="form-control">
                     </div>
-                    <input type="hidden" id="profileImageNameHidden" name="ImageFilenameToSave"> 
+                    <input type="hidden" id="profileImageUrl" name="Image"> 
 
                     <p class="form-message" id="profileUpdateMessage"></p>
                     <div class="form-group" style="text-align: center; margin-top:30px;">
@@ -115,17 +186,17 @@
                 <h3>Thay Đổi Mật Khẩu</h3>
                 <form id="passwordChangeForm">
                     <div class="form-group">
-                        <label for="currentPasswordInput">Mật khẩu hiện tại</label>
-                        <input type="password" id="currentPasswordInput" name="currentPassword" class="form-control">
-                         <small class="form-text text-muted" style="font-size:0.85em; color: #6c757d;">Để trống tất cả nếu không muốn đổi mật khẩu.</small>
+                        <label for="currentPassword">Mật khẩu hiện tại</label>
+                        <input type="password" id="currentPassword" name="currentPassword" class="form-control">
+                         <small class="form-text text-muted">Để trống tất cả nếu không muốn đổi mật khẩu.</small>
                     </div>
                     <div class="form-group">
-                        <label for="newPasswordInput">Mật khẩu mới</label>
-                        <input type="password" id="newPasswordInput" name="newPassword" class="form-control">
+                        <label for="newPassword">Mật khẩu mới</label>
+                        <input type="password" id="newPassword" name="newPassword" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="confirmNewPasswordInput">Xác nhận mật khẩu mới</label>
-                        <input type="password" id="confirmNewPasswordInput" name="confirmNewPassword" class="form-control">
+                        <label for="confirmNewPassword">Xác nhận mật khẩu mới</label>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control">
                     </div>
                     <p class="form-message" id="passwordChangeMessage"></p>
                     <div class="form-group" style="text-align: center; margin-top:20px;">
@@ -133,64 +204,74 @@
                     </div>
                 </form>
             </div>
-            <div id="auth-required-profile" class="empty-state" style="display:none;">
+            <div id="auth-required-profile">
                 <i class="fas fa-user-lock"></i>
                 <p>Vui lòng <a href="#" id="loginLinkProfile">đăng nhập</a> để xem hồ sơ của bạn.</p>
             </div>
         </div>
     </main>
 
-    <footer><div class="container"><div class="footer-content"><div class="footer-section about"><h3 class="logo-text"><i class="fas fa-graduation-cap"></i> E-Learn</h3><p>E-Learn là nền tảng học trực tuyến hàng đầu...</p></div><div class="footer-section links"><h3>Liên Kết Nhanh</h3><ul><li><a href="#">Về Chúng Tôi</a></li></ul></div><div class="footer-section contact-form-footer"><h3>Liên Hệ</h3><p><i class="fas fa-phone"></i>   123-456-7890</p><p><i class="fas fa-envelope"></i>   info@elearn.com</p></div></div><div class="footer-bottom">© <span id="currentYear"></span> E-Learn Platform | Designed by AI with Love</div></div></footer>
-    <div id="loginModal" class="modal"><div class="modal-content"><span class="close-btn" id="closeLoginModal">×</span><h2>Đăng Nhập</h2><form id="loginForm"><div class="form-group"><label for="loginUsername">Tên đăng nhập:</label><input type="text" id="loginUsername" name="UserName" required></div><div class="form-group"><label for="loginPassword">Mật khẩu:</label><input type="password" id="loginPassword" name="Password" required></div><button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button><p class="form-message" id="loginMessage"></p><p class="switch-form">Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a></p></form></div></div>
-    <div id="registerModal" class="modal"><div class="modal-content"><span class="close-btn" id="closeRegisterModal">×</span><h2>Đăng Ký</h2><form id="registerForm"><div class="form-group"><label for="registerUsername">Tên đăng nhập:</label><input type="text" id="registerUsername" name="UserName" required></div><div class="form-group"><label for="registerEmail">Email:</label><input type="email" id="registerEmail" name="Email" required></div><div class="form-group"><label for="registerPassword">Mật khẩu:</label><input type="password" id="registerPassword" name="Password" required></div><div class="form-group"><label for="registerPhone">Số điện thoại (tùy chọn):</label><input type="tel" id="registerPhone" name="Phone"></div><button type="submit" class="btn btn-primary btn-block">Đăng Ký</button><p class="form-message" id="registerMessage"></p><p class="switch-form">Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập</a></p></form></div></div>
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">© <span id="currentYear"></span> E-Learn Platform | All Rights Reserved</div>
+        </div>
+    </footer>
+    <div id="loginModal" class="modal"><div class="modal-content"><span class="close-btn" id="closeLoginModal">×</span><h2>Đăng Nhập</h2><form id="loginForm"><div class="form-group"><label for="loginUsername">Tên đăng nhập:</label><input type="text" id="loginUsername" name="UserName" required class="form-control"></div><div class="form-group"><label for="loginPassword">Mật khẩu:</label><input type="password" id="loginPassword" name="Password" required class="form-control"></div><button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button><p class="form-message" id="loginMessage"></p><p class="switch-form">Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a></p></form></div></div>
+    <div id="registerModal" class="modal"><div class="modal-content"><span class="close-btn" id="closeRegisterModal">×</span><h2>Đăng Ký</h2><form id="registerForm"><div class="form-group"><label for="registerUsername">Tên đăng nhập:</label><input type="text" id="registerUsername" name="UserName" required class="form-control"></div><div class="form-group"><label for="registerEmail">Email:</label><input type="email" id="registerEmail" name="Email" required class="form-control"></div><div class="form-group"><label for="registerPassword">Mật khẩu:</label><input type="password" id="registerPassword" name="Password" required class="form-control"></div><div class="form-group"><label for="registerPhone">Số điện thoại (tùy chọn):</label><input type="tel" id="registerPhone" name="Phone" class="form-control"></div><button type="submit" class="btn btn-primary btn-block">Đăng Ký</button><p class="form-message" id="registerMessage"></p><p class="switch-form">Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập</a></p></form></div></div>
 
-    <script src="script.js"></script>
+    <script src="script.js"></script> <!-- Assumed to contain common functions LIKE updateUserUI and modal handling -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const API_BASE_URL = 'http://127.0.0.1:8000';
-            const AVATAR_STATIC_BASE_URL = `${API_BASE_URL}`;
-
+            const AVATAR_DB_PATH_PREFIX = '/static/uploads/avatars/';
 
             const profileLoaderEl = document.getElementById('profile-loader');
             const profileContentEl = document.getElementById('profile-content');
             const authRequiredProfileEl = document.getElementById('auth-required-profile');
             const loginLinkProfileEl = document.getElementById('loginLinkProfile');
             const profileAvatarDisplay = document.getElementById('profileAvatarDisplay');
-            const avatarUploadInput = document.getElementById('avatarUploadInput');
+            const avatarUploadInput = document.getElementById('avatarUpload');
             const profileUsernameDisplay = document.getElementById('profileUsernameDisplay');
             const profileUpdateForm = document.getElementById('profileUpdateForm');
             const profileUsernameField = document.getElementById('profileUsernameField');
             const profileEmailInput = document.getElementById('profileEmail');
             const profilePhoneInput = document.getElementById('profilePhone');
-            const profileImageNameHiddenInput = document.getElementById('profileImageNameHidden');
+            const profileImageUrlInput = document.getElementById('profileImageUrl');
             const profileUpdateMessageEl = document.getElementById('profileUpdateMessage');
             const passwordChangeForm = document.getElementById('passwordChangeForm');
-            const currentPasswordInputEl = document.getElementById('currentPasswordInput');
-            const newPasswordInputEl = document.getElementById('newPasswordInput');
-            const confirmNewPasswordInputEl = document.getElementById('confirmNewPasswordInput');
+            const currentPasswordInput = document.getElementById('currentPassword');
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
             const passwordChangeMessageEl = document.getElementById('passwordChangeMessage');
 
             let currentUser = null;
-            let currentAvatarFilenameInDB = null;
+            window.pendingAvatarFile = null;
 
-            
             async function apiRequest(endpoint, method = 'GET', data = null, token = null, isFormData = false) {
                 const config = { method: method, headers: {} };
-                if (token) config.headers['Authorization'] = `Bearer ${token}`;
-                if (isFormData) { config.body = data; }
-                else if (data && (method === 'POST' || method === 'PUT')) {
-                    config.headers['Content-Type'] = 'application/json';
-                    config.body = JSON.stringify(data);
+                const userToken = localStorage.getItem('userToken');
+                if (userToken) config.headers['Authorization'] = `Bearer ${userToken}`;
+                
+                if (data) {
+                    if (isFormData) {
+                        config.body = data;
+                    } else {
+                        config.headers['Content-Type'] = 'application/json';
+                        config.body = JSON.stringify(data);
+                    }
                 }
                 try {
                     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
                     if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({ detail: `Lỗi HTTP: ${response.status}` }));
-                        throw new Error(errorData.detail || `Lỗi HTTP: ${response.status}`);
+                        const errorData = await response.json().catch(() => ({ detail: `Lỗi HTTP: ${response.status} ${response.statusText}` }));
+                        throw new Error(errorData.detail || `Lỗi HTTP: ${response.status} ${response.statusText}`);
                     }
                     if (response.status === 204 || response.headers.get("content-length") === "0") return null;
                     return await response.json();
-                } catch (error) { console.error(`API request tới ${endpoint} thất bại:`, error); throw error; }
+                } catch (error) { 
+                    console.error(`API request tới ${endpoint} thất bại:`, error); 
+                    throw error; 
+                }
             }
 
             function displayMessage(element, message, isSuccess = true, duration = 3000) {
@@ -199,30 +280,29 @@
                     element.className = `form-message ${isSuccess ? 'success' : 'error'}`;
                     element.style.display = 'block';
                     if (duration > 0) {
-                        setTimeout(() => { element.style.display = 'none'; element.textContent = '';}, duration);
+                        setTimeout(() => { 
+                            if (element.textContent === message) {
+                                element.style.display = 'none'; 
+                                element.textContent = '';
+                            }
+                        }, duration);
                     }
                 }
             }
 
-            function setAvatarSrc(filename) {
-                if (filename) {
-                    // Nếu filename đã bao gồm đường dẫn /static/uploads/ → dùng trực tiếp
-                    if (filename.startsWith("/static/")) {
-                        profileAvatarDisplay.src = `${API_BASE_URL}${filename}`;
-                    } else {
-                        profileAvatarDisplay.src = `${AVATAR_STATIC_BASE_URL}${filename}`;
-                    }
+            function setAvatarDisplay(imagePathForDB) { 
+                if (imagePathForDB && imagePathForDB.startsWith('/static/')) {
+                    profileAvatarDisplay.src = `${API_BASE_URL}${imagePathForDB}`;
                 } else {
-                    profileAvatarDisplay.src = 'images/nophoto.png'; // Ảnh mặc định nếu không có filename
+                    profileAvatarDisplay.src = 'images/nophoto.png';
+                }
             }
-
+            
             profileAvatarDisplay.onerror = function () {
                 this.onerror = null;
-                this.src = 'images/nophoto.png'; // Ảnh mặc định nếu không tải được
-                console.warn("Lỗi tải avatar từ server, đã dùng ảnh mặc định.");
+                this.src = 'images/nophoto.png'; 
+                console.warn("Lỗi tải avatar, đã dùng ảnh mặc định cục bộ.");
             };
-        }
-
 
             async function loadUserProfile() {
                 currentUser = JSON.parse(localStorage.getItem('userData'));
@@ -250,9 +330,8 @@
                         profileUsernameField.value = userDataFromAPI.UserName;
                         profileEmailInput.value = userDataFromAPI.Email;
                         profilePhoneInput.value = userDataFromAPI.Phone || '';
-                        currentAvatarFilenameInDB = userDataFromAPI.Image;
-                        profileImageNameHiddenInput.value = currentAvatarFilenameInDB || '';
-                        setAvatarSrc(currentAvatarFilenameInDB);
+                        profileImageUrlInput.value = userDataFromAPI.Image || '';
+                        setAvatarDisplay(userDataFromAPI.Image);
                         profileContentEl.style.display = 'block';
                     } else {
                          displayMessage(profileUpdateMessageEl, 'Không thể tải thông tin người dùng.', false, 0);
@@ -264,130 +343,165 @@
                 }
             }
 
-            avatarUploadInput.addEventListener('change', async function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            if (!currentUser || !currentUser.UserID) {
-                displayMessage(profileUpdateMessageEl, 'Vui lòng đăng nhập.', false);
-                return;
-            }
-            if (file.size > 5 * 1024 * 1024) {
-                displayMessage(profileUpdateMessageEl, 'Ảnh không quá 5MB.', false);
-                avatarUploadInput.value = "";
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append("file", file);
-
-            displayMessage(profileUpdateMessageEl, 'Đang tải ảnh lên...', true, 0);
-
-            try {
-                const uploadResponse = await apiRequest('/uploadavatar/', 'POST', formData, null, true);
-                if (uploadResponse && uploadResponse.file_url) {
-                    const imageUrl = uploadResponse.file_url;
-
-                    // ✅ Cập nhật ngay ảnh hiển thị
-                    profileAvatarDisplay.src = `${API_BASE_URL}${imageUrl}`;
-
-                    // ✅ Gọi API cập nhật user ngay
-                    const updatedData = {
-                        Email: profileEmailInput.value.trim(),
-                        Phone: profilePhoneInput.value.trim() || null,
-                        Image: imageUrl
-                    };
-
-                    const response = await apiRequest(`/users/${currentUser.UserID}`, 'PUT', updatedData);
-                    localStorage.setItem("userData", JSON.stringify(response));
-                    updateUserUI(response); // cập nhật header nếu cần
-
-                    displayMessage(profileUpdateMessageEl, 'Cập nhật avatar thành công!', true);
+            avatarUploadInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    if (file.size > 5 * 1024 * 1024) {
+                        displayMessage(profileUpdateMessageEl, 'Ảnh đại diện không được vượt quá 5MB.', false);
+                        avatarUploadInput.value = ""; 
+                        window.pendingAvatarFile = null;
+                        setAvatarDisplay(profileImageUrlInput.value); 
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        profileAvatarDisplay.src = e.target.result; 
+                    }
+                    reader.readAsDataURL(file);
+                    window.pendingAvatarFile = file; 
                 } else {
-                    throw new Error("Không nhận được đường dẫn ảnh.");
+                    window.pendingAvatarFile = null; 
+                    setAvatarDisplay(profileImageUrlInput.value);
                 }
-            } catch (error) {
-                displayMessage(profileUpdateMessageEl, `Lỗi tải ảnh: ${error.message}`, false);
-                if (currentAvatarFilenameInDB) setAvatarSrc(currentAvatarFilenameInDB);
-            }
-        });
-
+            });
 
             profileUpdateForm.addEventListener('submit', async function(event) {
-    event.preventDefault();
-    if (!currentUser || !currentUser.UserID) return;
+                event.preventDefault(); 
+                if (!currentUser || !currentUser.UserID) {
+                    displayMessage(profileUpdateMessageEl, 'Vui lòng đăng nhập để cập nhật hồ sơ.', false);
+                    return;
+                }
+                const submitButton = profileUpdateForm.querySelector('button[type="submit"]');
+                const originalButtonText = submitButton.textContent;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+                let imagePathForDB = profileImageUrlInput.value; 
 
-    const submitButton = profileUpdateForm.querySelector('button[type="submit"]');
-    submitButton.disabled = true;
-    submitButton.textContent = 'Đang lưu...';
+                if (window.pendingAvatarFile) {
+                    const formData = new FormData();
+                    formData.append("file", window.pendingAvatarFile);
+                    try {
+                        const uploadResponse = await apiRequest('/uploadavatar/', 'POST', formData, null, true); 
+                        if (uploadResponse && uploadResponse.file_name) {
+                            imagePathForDB = `${AVATAR_DB_PATH_PREFIX}${uploadResponse.file_name}`;
+                        } else {
+                            throw new Error("Không thể tải ảnh lên hoặc phản hồi không hợp lệ.");
+                        }
+                    } catch (error) {
+                        displayMessage(profileUpdateMessageEl, `Lỗi tải ảnh: ${error.message}`, false);
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalButtonText;
+                        return; 
+                    }
+                }
+                const updatedData = {
+                    Email: profileEmailInput.value.trim(),
+                    Phone: profilePhoneInput.value.trim() || null,
+                    Image: imagePathForDB 
+                };
+                try {
+                    const updatedUser = await apiRequest(`/users/${currentUser.UserID}`, 'PUT', updatedData);
+                    displayMessage(profileUpdateMessageEl, 'Cập nhật hồ sơ thành công!', true);
+                    if (updatedUser) {
+                        profileEmailInput.value = updatedUser.Email;
+                        profilePhoneInput.value = updatedUser.Phone || '';
+                        profileImageUrlInput.value = updatedUser.Image || ''; 
+                        setAvatarDisplay(updatedUser.Image); 
 
-    const updatedData = {
-        Email: profileEmailInput.value.trim(),
-        Phone: profilePhoneInput.value.trim() || null,
-        Image: profileImageUrlInput.value || null
-    };
-
-    try {
-        // Nếu người dùng có chọn avatar mới
-        if (window.pendingAvatarFile) {
-            const formData = new FormData();
-            formData.append("file", window.pendingAvatarFile);
-
-            const uploadResponse = await apiRequest('/uploadavatar/', 'POST', formData, null, true);
-            if (uploadResponse && uploadResponse.file_url) {
-                updatedData.Image = uploadResponse.file_url;
-                profileImageUrlInput.value = uploadResponse.file_url;
-                profileAvatarDisplay.src = `${API_BASE_URL}${uploadResponse.file_url}`;
-            } else {
-                throw new Error("Không thể tải ảnh lên.");
-            }
-        }
-
-        const response = await apiRequest(`/users/${currentUser.UserID}`, 'PUT', updatedData);
-        localStorage.setItem('userData', JSON.stringify(response));
-        updateUserUI(response); // Nếu có
-        displayMessage(profileUpdateMessageEl, 'Cập nhật thành công!', true);
-    } catch (error) {
-        displayMessage(profileUpdateMessageEl, `Lỗi cập nhật: ${error.message}`, false);
-    }
-
-    submitButton.disabled = false;
-    submitButton.textContent = 'Lưu Thay Đổi';
-});
-
-
+                        const storedUserData = JSON.parse(localStorage.getItem('userData')) || {};
+                        storedUserData.Email = updatedUser.Email;
+                        storedUserData.Phone = updatedUser.Phone;
+                        storedUserData.Image = updatedUser.Image;
+                        localStorage.setItem('userData', JSON.stringify(storedUserData));
+                        
+                        if (typeof updateUserUI === 'function') { 
+                            updateUserUI(updatedUser); // This should update header avatar/name
+                        }
+                    }
+                    window.pendingAvatarFile = null; 
+                } catch (error) {
+                    displayMessage(profileUpdateMessageEl, `Lỗi cập nhật hồ sơ: ${error.message}`, false);
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                }
+            });
 
             passwordChangeForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
                 if (!currentUser || !currentUser.UserID) return;
-                const currentPassword = currentPasswordInputEl.value;
-                const newPassword = newPasswordInputEl.value;
-                const confirmNewPassword = confirmNewPasswordInputEl.value;
+                const currentPass = currentPasswordInput.value;
+                const newPass = newPasswordInput.value;
+                const confirmNewPass = confirmNewPasswordInput.value;
 
-                if (!newPassword && !currentPassword && !confirmNewPassword) { passwordChangeForm.reset(); return; }
-                if (newPassword && !currentPassword) { displayMessage(passwordChangeMessageEl, 'Nhập mật khẩu hiện tại.', false); return; }
-                if (!newPassword && currentPassword) { displayMessage(passwordChangeMessageEl, 'Nhập mật khẩu mới.', false); return; }
-                if (newPassword.length < 6) { displayMessage(passwordChangeMessageEl, 'Mật khẩu mới ít nhất 6 ký tự.', false); return; }
-                if (newPassword !== confirmNewPassword) { displayMessage(passwordChangeMessageEl, 'Xác nhận mật khẩu mới không khớp.', false); return; }
+                if (!newPass && !currentPass && !confirmNewPass) { passwordChangeForm.reset(); return; }
+                if (newPass && !currentPass) { displayMessage(passwordChangeMessageEl, 'Nhập mật khẩu hiện tại.', false); return; }
+                if (!newPass && currentPass) { displayMessage(passwordChangeMessageEl, 'Nhập mật khẩu mới.', false); return; }
+                if (newPass && newPass.length < 6) { displayMessage(passwordChangeMessageEl, 'Mật khẩu mới ít nhất 6 ký tự.', false); return; }
+                if (newPass !== confirmNewPass) { displayMessage(passwordChangeMessageEl, 'Xác nhận mật khẩu mới không khớp.', false); return; }
                 
                 const submitButton = passwordChangeForm.querySelector('button[type="submit"]');
                 const originalButtonText = submitButton.textContent;
                 submitButton.disabled = true; submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đổi...';
                 try {
-                    const userDataFromAPI = await apiRequest(`/users/${currentUser.UserID}`); 
-                    if (userDataFromAPI.Password !== currentPassword) { // So sánh plain text (theo yêu cầu tạm thời)
-                         displayMessage(passwordChangeMessageEl, 'Mật khẩu hiện tại không đúng.', false);
-                         throw new Error("Mật khẩu hiện tại không đúng.");
-                    }
-                    await apiRequest(`/users/${currentUser.UserID}`, 'PUT', { Password: newPassword });
-                    displayMessage(passwordChangeMessageEl, 'Đổi mật khẩu thành công! Đăng nhập lại với mật khẩu mới.', true, 5000);
+                    const payload = { OldPassword: currentPass, Password: newPass };
+                    await apiRequest(`/users/${currentUser.UserID}`, 'PUT', payload);
+                    displayMessage(passwordChangeMessageEl, 'Đổi mật khẩu thành công!', true, 5000);
                     passwordChangeForm.reset();
-                } catch (error) { displayMessage(passwordChangeMessageEl, `Lỗi đổi mật khẩu: ${error.message}`, false);
-                } finally { submitButton.disabled = false; submitButton.textContent = originalButtonText; }
+                } catch (error) { 
+                     if (error.message && (error.message.toLowerCase().includes("old password") || error.message.toLowerCase().includes("mật khẩu hiện tại không đúng"))) {
+                         displayMessage(passwordChangeMessageEl, 'Mật khẩu hiện tại không đúng.', false);
+                    } else {
+                        displayMessage(passwordChangeMessageEl, `Lỗi đổi mật khẩu: ${error.message}`, false);
+                    }
+                } finally { 
+                    submitButton.disabled = false; 
+                    submitButton.innerHTML = originalButtonText; 
+                }
             });
 
             loadUserProfile();
-            window.addEventListener('load', () => { const pl=document.getElementById('page-loader'); if(pl){pl.style.opacity='0';setTimeout(()=>pl.style.display='none',500);}});
-            const cye=document.getElementById('currentYear'); if(cye)cye.textContent=new Date().getFullYear();
+
+            // --- ADDED DROPDOWN LOGIC ---
+            const userInfoEl = document.getElementById('userInfo');
+            if (userInfoEl) {
+                const dropdownBtn = userInfoEl.querySelector('.dropdown-btn');
+                const dropdownContent = userInfoEl.querySelector('.dropdown-content');
+
+                if (dropdownBtn && dropdownContent) {
+                    dropdownBtn.addEventListener('click', function(event) {
+                        event.stopPropagation(); // Important to prevent immediate closing by document click listener
+                        // Toggle display
+                        const isVisible = dropdownContent.style.display === 'block';
+                        dropdownContent.style.display = isVisible ? 'none' : 'block';
+                    });
+                }
+                // Global click listener to close dropdown when clicking outside
+                // This should ideally be in script.js to avoid multiple listeners if this profile script is loaded multiple times
+                // For now, ensure it only gets added once or is managed carefully
+                if (!document.body.hasAttribute('data-global-click-listener-set')) {
+                     document.addEventListener('click', function(event) {
+                        document.querySelectorAll('.user-info .dropdown-content').forEach(content => {
+                            if (content.style.display === 'block') {
+                                const dropdownParent = content.closest('.user-info');
+                                if (dropdownParent && !dropdownParent.contains(event.target)) {
+                                    content.style.display = 'none';
+                                }
+                            }
+                        });
+                    });
+                    document.body.setAttribute('data-global-click-listener-set', 'true');
+                }
+            }
+            // --- END ADDED DROPDOWN LOGIC ---
+
+
+            window.addEventListener('load', () => { 
+                const pl=document.getElementById('page-loader'); 
+                if(pl){ pl.style.opacity='0'; setTimeout(()=>pl.style.display='none', 500); }
+            });
+            const cye=document.getElementById('currentYear'); 
+            if(cye) cye.textContent=new Date().getFullYear();
         });
     </script>
 </body>
