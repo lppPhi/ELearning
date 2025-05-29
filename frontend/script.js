@@ -116,23 +116,53 @@ document.addEventListener('DOMContentLoaded', function() {
     function createCourseCard(course, creator) {
         const card = document.createElement('div');
         card.className = 'course-card';
-        card.innerHTML = `
-            <div class="card-image-container">
-                <img src="${course.Image || 'images/course-placeholder.jpg'}" alt="${course.CourseName}">
-                ${course.Price > 0 ? `<span class="course-price">$${course.Price.toFixed(2)}</span>` : '<span class="course-price">Miễn phí</span>'}
+
+        let imageUrl = 'images/nophoto.png'; 
+        if (course.Image) {
+            if (course.Image.startsWith('http://') || course.Image.startsWith('https://')) {
+                imageUrl = course.Image;
+            } else if (course.Image.startsWith('/static/')) {
+                imageUrl = `${API_BASE_URL}${course.Image}`;
+            }
+        }
+
+        const imgElement = document.createElement('img');
+        imgElement.alt = course.CourseName;
+        imgElement.onerror = function() {
+            this.onerror = null; 
+            this.src = 'images/nophoto.png'; // Fallback image if the course image fails to load
+        };
+        imgElement.src = imageUrl; 
+
+        const priceSpan = document.createElement('span');
+        priceSpan.className = 'course-price';
+        if (course.Price && parseFloat(course.Price) > 0) { // Chuyển course.Price sang số trước khi so sánh
+            priceSpan.textContent = `$${parseFloat(course.Price).toFixed(2)}`;
+        } else {
+            priceSpan.textContent = 'Miễn phí';
+            priceSpan.classList.add('free'); 
+        }
+
+        const cardImageContainer = document.createElement('div');
+        cardImageContainer.className = 'card-image-container';
+        cardImageContainer.appendChild(imgElement);
+        cardImageContainer.appendChild(priceSpan);
+
+        const cardContent = document.createElement('div');
+        cardContent.className = 'card-content';
+        cardContent.innerHTML = `
+            <h3 class="course-title">${course.CourseName}</h3>
+            <p class="course-instructor">Giảng viên: ${creator ? creator.UserName : 'N/A'}</p>
+            <p class="course-description">${course.Decription || 'Không có mô tả.'}</p>
+            <div class="course-meta">
+                <span><i class="fas fa-users"></i> ${course.NumberOfRegistrations || 0} học viên</span>
             </div>
-            <div class="card-content">
-                <h3 class="course-title">${course.CourseName}</h3>
-                <p class="course-instructor">Giảng viên: ${creator ? creator.UserName : 'N/A'}</p>
-                <p class="course-description">${course.Decription || 'Không có mô tả.'}</p>
-                <div class="course-meta">
-                    <span><i class="fas fa-users"></i> ${course.NumberOfRegistrations || 0} học viên</span>
-                    <!-- Placeholder for rating - you'd need this data from backend -->
-                    <!-- <span><i class="fas fa-star"></i> 4.5 (250)</span> -->
-                </div>
-                <a href="course-detail.html?id=${course.CourseID}" class="btn btn-primary btn-block">Xem Chi Tiết</a>
-            </div>
+            <a href="course-detail.html?id=${course.CourseID}" class="btn btn-primary btn-block">Xem Chi Tiết</a>
         `;
+
+        card.appendChild(cardImageContainer);
+        card.appendChild(cardContent);
+
         return card;
     }
 

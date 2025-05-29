@@ -4,424 +4,254 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tạo Khóa Học Mới</title>
-    <link rel="stylesheet" href="style.css"> <!-- Sử dụng lại style.css chung -->
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Styles specific to create-course page */
-        .create-course-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 30px;
-            background-color: var(--white-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+        .create-course-container { max-width: 800px; margin: 40px auto; padding: 30px; background-color: var(--white-color); border-radius: var(--border-radius); box-shadow: var(--box-shadow); }
+        .create-course-container h1 { text-align: center; color: var(--primary-color); margin-bottom: 30px; font-size: 2.2em; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.95em; }
+        .form-group input[type="text"], .form-group input[type="number"], .form-group textarea, .form-group input[type="file"], .form-group select {
+            width: 100%; padding: 10px; border: 1px solid #ccc;
+            border-radius: var(--border-radius); font-size: 1em; font-family: var(--font-family);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-
-        .create-course-container h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            font-size: 2.2em;
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none; border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb, 74, 144, 226), 0.25);
         }
-
-        .form-group { /* Already in style.css, but can be customized here */
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 1em;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group textarea,
-        .form-group select,
-        .form-group input[type="file"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--gray-color);
-            border-radius: var(--border-radius);
-            font-size: 1em;
-            font-family: var(--font-family);
-            transition: border-color var(--transition-speed);
-        }
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2); /* Use RGB of primary color */
-        }
-
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .form-group .checkbox-group {
-            display: flex;
-            align-items: center;
-        }
-        .form-group .checkbox-group input[type="checkbox"] {
-            width: auto;
-            margin-right: 10px;
-        }
-
-        .form-message { /* From style.css, ensure it's there */
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9em;
-        }
-        .form-message.success { color: var(--success-color); }
-        .form-message.error { color: var(--error-color); }
-
-        .submit-btn-container {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        #image-preview-container {
-            margin-top: 15px;
-            text-align: center;
-        }
-        #image-preview {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--light-color);
-            object-fit: cover;
-        }
-
-        /* Helper text for image upload */
-        .form-group .upload-hint {
-            font-size: 0.85em;
-            color: var(--gray-color);
-            margin-top: 5px;
-        }
-
-
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        .form-group .checkbox-group { display: flex; align-items: center; gap: 8px; }
+        .form-group .checkbox-group input[type="checkbox"] { width: auto; margin-top: 2px; }
+        .form-group .checkbox-group label { font-weight:normal; margin-bottom:0;}
+        .form-message { text-align: center; margin-top: 15px; margin-bottom: 15px; font-size: 0.95em; min-height: 1.5em; padding: 10px 15px; border-radius: var(--border-radius); display: none; opacity: 0; transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; transform: translateY(10px); }
+        .form-message.show { display: block; opacity: 1; transform: translateY(0); }
+        .form-message.success { color: #0f5132; background-color: #d1e7dd; border: 1px solid #badbcc; }
+        .form-message.error { color: #842029; background-color: #f8d7da; border: 1px solid #f5c2c7;}
+        .submit-btn-container { text-align: center; margin-top: 30px; }
+        #course-image-preview-container { margin-top: 10px; text-align: left; }
+        #course-image-preview { max-width: 300px; max-height: 200px; border-radius: var(--border-radius); border: 1px solid var(--light-color); object-fit: cover; display: block; margin-bottom: 5px; }
+        .auth-message-container { text-align:center; padding: 20px;}
+        .form-text.text-muted {font-size: 0.85em; color: #6c757d; margin-top: 5px; display: block;}
     </style>
 </head>
 <body>
-    <div id="page-loader">
-        <div class="spinner"></div>
-        <p>Đang tải...</p>
-    </div>
-
-    <header>
-        <!-- Header content from index.html -->
-        <div class="container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-graduation-cap"></i> E-Learn
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Trang Chủ</a></li>
-                    <li><a href="index.html#courses-section">Khóa Học</a></li>
-                    <!-- Add other relevant links here -->
-                </ul>
-            </nav>
-            <div class="auth-buttons">
-                <button id="loginBtn" class="btn btn-secondary">Đăng Nhập</button>
-                <button id="registerBtn" class="btn btn-primary">Đăng Ký</button>
-            </div>
-            <div id="userInfo" class="user-info" style="display:none;">
-                <img id="userAvatar" src="images/default-avatar.png" alt="Avatar" class="avatar">
-                <span id="usernameDisplay"></span>
-                <div class="dropdown">
-                    <button class="dropdown-btn"><i class="fas fa-chevron-down"></i></button>
-                    <div class="dropdown-content">
-                        <a href="profile.html" id="profileLink"><i class="fas fa-user"></i> Hồ sơ</a>
-                        <a href="my-courses.html" id="myCoursesLink"><i class="fas fa-book-open-reader"></i> Khóa học của tôi</a>
-                        <a href="create-course.html" id="createCourseLink" class="active"><i class="fas fa-plus-circle"></i> Tạo khóa học</a>
-                        <a href="index.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
-                    </div>
-                </div>
-            </div>
-            <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
-        </div>
-    </header>
-     <nav class="mobile-menu">
-         <ul>
-            <li><a href="index.html">Trang Chủ</a></li>
-            <li><a href="index.html#courses-section">Khóa Học</a></li>
-            <li><a href="create-course.html" class="active">Tạo khóa học</a></li>
-        </ul>
-        <div class="mobile-auth-buttons" style="padding: 15px;">
-        </div>
-    </nav>
-
+    <div id="page-loader"><div class="spinner"></div><p>Đang tải...</p></div>
+    <header><div class="container"><a href="index.html" class="logo"><i class="fas fa-graduation-cap"></i> E-Learn</a><nav><ul><li><a href="index.html">Trang Chủ</a></li><li><a href="index.html#courses-section">Khóa Học</a></li><li><a href="my-courses.html">Khóa Học Của Tôi</a></li></ul></nav><div class="auth-buttons" style="display: flex;"><button id="loginBtn" class="btn btn-secondary">Đăng Nhập</button><button id="registerBtn" class="btn btn-primary">Đăng Ký</button></div><div id="userInfo" class="user-info" style="display:none;"><img id="userAvatar" src="images/default-avatar.png" alt="Avatar" class="avatar"><span id="usernameDisplay"></span><div class="dropdown"><button class="dropdown-btn"><i class="fas fa-chevron-down"></i></button><div class="dropdown-content"><a href="profile.html" id="profileLink"><i class="fas fa-user"></i> Hồ sơ</a><a href="my-courses.html" id="myCoursesLink"><i class="fas fa-book-open-reader"></i> Khóa học của tôi</a><a href="create-course.html" id="createCourseLink" class="active"><i class="fas fa-plus-circle"></i> Tạo khóa học</a><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></div></div></div><button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button></div></header>
+    <nav class="mobile-menu"><ul><li><a href="index.html">Trang Chủ</a></li><li><a href="index.html#courses-section">Khóa Học</a></li><li><a href="create-course.html" class="active">Tạo khóa học</a></li></ul><div class="mobile-auth-buttons" style="padding: 15px;"></div></nav>
 
     <main>
         <div class="create-course-container">
             <h1>Tạo Khóa Học Mới</h1>
-            <div id="auth-message" class="form-message" style="display:none; margin-bottom: 20px;"></div>
-
-            <form id="createCourseForm">
+            <div id="auth-message-create-course" class="auth-message-container" style="display:none;">
+                <p class="form-message error show">Vui lòng <a href="#" id="loginLinkCreateCourse">đăng nhập</a> để tạo khóa học.</p>
+            </div>
+            <p class="form-message" id="createCourseFormGlobalMessage"></p>
+            <form id="createCourseForm" style="display:none;">
                 <div class="form-group">
-                    <label for="courseName">Tên Khóa Học <span style="color:red;">*</span></label>
-                    <input type="text" id="courseName" name="CourseName" required>
+                    <label for="courseNameInput">Tên Khóa Học <span style="color:red;">*</span></label>
+                    <input type="text" id="courseNameInput" name="CourseName" class="form-control" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="decription">Mô Tả Ngắn</label>
-                    <textarea id="decription" name="Decription" placeholder="Mô tả ngắn gọn về khóa học (sẽ hiển thị trên card khóa học)"></textarea>
+                    <label for="descriptionInput">Mô Tả Ngắn</label>
+                    <textarea id="descriptionInput" name="Decription" class="form-control" placeholder="Mô tả ngắn gọn về khóa học (hiển thị trên card)"></textarea>
                 </div>
-
                 <div class="form-group">
-                    <label for="detailCourse">Mô Tả Chi Tiết</label>
-                    <textarea id="detailCourse" name="DetailCourse" placeholder="Mô tả chi tiết nội dung, mục tiêu của khóa học"></textarea>
+                    <label for="detailCourseInput">Mô Tả Chi Tiết</label>
+                    <textarea id="detailCourseInput" name="DetailCourse" class="form-control" placeholder="Mô tả chi tiết nội dung, mục tiêu của khóa học"></textarea>
                 </div>
-
                 <div class="form-group">
-                    <label for="price">Giá Khóa Học (VNĐ)</label>
-                    <input type="number" id="price" name="Price" min="0" step="1000" value="0">
+                    <label for="priceInput">Giá Khóa Học (VNĐ)</label>
+                    <input type="number" id="priceInput" name="Price" class="form-control" min="0" step="1000" value="0">
                 </div>
-
                 <div class="form-group">
                     <div class="checkbox-group">
-                        <input type="checkbox" id="isPublic" name="IsPublic" checked>
-                        <label for="isPublic" style="font-weight:normal; margin-bottom:0;">Công khai khóa học</label>
+                        <input type="checkbox" id="isPublicCheckbox" name="IsPublic" checked>
+                        <label for="isPublicCheckbox">Công khai khóa học</label>
                     </div>
                 </div>
-
                 <div class="form-group">
-                    <label for="courseImageFile">Ảnh Bìa Khóa Học</label>
-                    <input type="file" id="courseImageFile" name="courseImageFile" accept="image/*">
-                    <div id="image-preview-container" style="display:none;">
-                        <img id="image-preview" src="#" alt="Xem trước ảnh">
+                    <label for="courseImageFileInput">Ảnh Bìa Khóa Học</label>
+                    <input type="file" id="courseImageFileInput" name="courseImageFile" class="form-control" accept="image/*">
+                    <div id="course-image-preview-container" style="margin-top:10px;">
+                        <img id="course-image-preview" src="#" alt="Xem trước ảnh bìa" style="display:none;">
                     </div>
-                     <p class="upload-hint">Để trống nếu không muốn đặt ảnh hoặc sử dụng URL bên dưới.</p>
+                    <small class="form-text text-muted">Ảnh nên có tỷ lệ 16:9. Kích thước tối đa 10MB.</small>
                 </div>
-
-                <div class="form-group">
-                    <label for="courseImageUrl">Hoặc URL Ảnh Bìa</label>
-                    <input type="text" id="courseImageUrl" name="Image" placeholder="https://example.com/image.jpg">
-                </div>
-
-
-                <p class="form-message" id="createCourseMessage"></p>
-
+                <input type="hidden" id="courseImageToSaveUrl" name="Image">
                 <div class="submit-btn-container">
-                    <button type="submit" class="btn btn-primary btn-lg">Tạo Khóa Học</button>
+                    <button type="submit" id="submitCreateCourseBtn" class="btn btn-primary btn-lg">Tạo Khóa Học</button>
                 </div>
             </form>
         </div>
     </main>
 
-    <footer>
-        <!-- Footer content from index.html -->
-         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section about">
-                    <h3 class="logo-text"><i class="fas fa-graduation-cap"></i> E-Learn</h3>
-                    <p>
-                        E-Learn là nền tảng học trực tuyến hàng đầu, mang đến cơ hội tiếp cận tri thức
-                        chất lượng cao cho mọi người.
-                    </p>
-                </div>
-                <div class="footer-section links">
-                    <h3>Liên Kết Nhanh</h3>
-                    <ul>
-                        <li><a href="#">Về Chúng Tôi</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section contact-form-footer">
-                    <h3>Liên Hệ</h3>
-                     <p><i class="fas fa-phone"></i>   123-456-7890</p>
-                     <p><i class="fas fa-envelope"></i>   info@elearn.com</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                © <span id="currentYear"></span> E-Learn Platform | Designed by AI with Love
-            </div>
-        </div>
-    </footer>
+    <footer><div class="container"><div class="footer-content"><div class="footer-section about"><h3 class="logo-text"><i class="fas fa-graduation-cap"></i> E-Learn</h3><p>E-Learn là nền tảng học trực tuyến hàng đầu...</p></div><div class="footer-section links"><h3>Liên Kết Nhanh</h3><ul><li><a href="#">Về Chúng Tôi</a></li></ul></div><div class="footer-section contact-form-footer"><h3>Liên Hệ</h3><p><i class="fas fa-phone"></i>   123-456-7890</p><p><i class="fas fa-envelope"></i>   info@elearn.com</p></div></div><div class="footer-bottom">© <span id="currentYear"></span> E-Learn Platform | Designed by AI with Love</div></div></footer>
+    <div id="loginModal" class="modal"><div class="modal-content"><span class="close-btn" id="closeLoginModal">×</span><h2>Đăng Nhập</h2><form id="loginForm"><div class="form-group"><label for="loginUsername">Tên đăng nhập:</label><input type="text" id="loginUsername" name="UserName" required></div><div class="form-group"><label for="loginPassword">Mật khẩu:</label><input type="password" id="loginPassword" name="Password" required></div><button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button><p class="form-message" id="loginMessage"></p><p class="switch-form">Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a></p></form></div></div>
+    <div id="registerModal" class="modal"><div class="modal-content"><span class="close-btn" id="closeRegisterModal">×</span><h2>Đăng Ký</h2><form id="registerForm"><div class="form-group"><label for="registerUsername">Tên đăng nhập:</label><input type="text" id="registerUsername" name="UserName" required></div><div class="form-group"><label for="registerEmail">Email:</label><input type="email" id="registerEmail" name="Email" required></div><div class="form-group"><label for="registerPassword">Mật khẩu:</label><input type="password" id="registerPassword" name="Password" required></div><div class="form-group"><label for="registerPhone">Số điện thoại (tùy chọn):</label><input type="tel" id="registerPhone" name="Phone"></div><button type="submit" class="btn btn-primary btn-block">Đăng Ký</button><p class="form-message" id="registerMessage"></p><p class="switch-form">Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập</a></p></form></div></div>
 
-    <!-- Login/Register Modals -->
-    <div id="loginModal" class="modal"> /* ... copy từ index.html ... */ </div>
-    <div id="registerModal" class="modal"> /* ... copy từ index.html ... */ </div>
-
-    <script src="script.js"></script> <!-- Main script for header, modals etc. -->
+    <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const API_BASE_URL = 'http://127.0.0.1:8000';
+            const authMessageEl = document.getElementById('auth-message-create-course');
+            const loginLinkEl = document.getElementById('loginLinkCreateCourse');
+            const createCourseFormEl = document.getElementById('createCourseForm');
+            const globalFormMessageEl = document.getElementById('createCourseFormGlobalMessage');
+            const courseImageFileEl = document.getElementById('courseImageFileInput');
+            const courseImagePreviewEl = document.getElementById('course-image-preview');
+            const courseImageToSaveUrlEl = document.getElementById('courseImageToSaveUrl');
+            const courseNameInputEl = document.getElementById('courseNameInput');
+            const descriptionInputEl = document.getElementById('descriptionInput');
+            const detailCourseInputEl = document.getElementById('detailCourseInput');
+            const priceInputEl = document.getElementById('priceInput');
+            const isPublicCheckboxEl = document.getElementById('isPublicCheckbox');
+            const submitCreateCourseBtnEl = document.getElementById('submitCreateCourseBtn');
+            let currentUser = null;
 
-            const createCourseForm = document.getElementById('createCourseForm');
-            const createCourseMessageEl = document.getElementById('createCourseMessage');
-            const authMessageEl = document.getElementById('auth-message');
-            const courseImageFileEl = document.getElementById('courseImageFile');
-            const imagePreviewContainer = document.getElementById('image-preview-container');
-            const imagePreview = document.getElementById('image-preview');
-
-            // --- COPIED apiRequest function from previous script ---
             async function apiRequest(endpoint, method = 'GET', data = null, token = null, isFormData = false) {
-                const config = {
-                    method: method,
-                    headers: {} // Initialize headers
-                };
-
-                if (token) {
-                    config.headers['Authorization'] = `Bearer ${token}`; // Assuming Bearer token auth
-                }
-
-                if (isFormData) {
-                    // For FormData, 'Content-Type' is set automatically by the browser
-                    config.body = data;
-                } else if (data && (method === 'POST' || method === 'PUT')) {
+                const config = { method: method, headers: {} };
+                if (token) config.headers['Authorization'] = `Bearer ${token}`;
+                if (isFormData) { config.body = data; }
+                else if (data && (method === 'POST' || method === 'PUT')) {
                     config.headers['Content-Type'] = 'application/json';
                     config.body = JSON.stringify(data);
                 }
-
-
                 try {
                     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
                     if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({ detail: response.statusText }));
-                        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                        const errorData = await response.json().catch(() => ({ detail: `Lỗi HTTP: ${response.status}` }));
+                        throw new Error(errorData.detail || `Lỗi HTTP: ${response.status}`);
                     }
-                    if (response.status === 204 || response.headers.get("content-length") === "0") {
-                        return null;
-                    }
+                    if (response.status === 204 || response.headers.get("content-length") === "0") return null;
                     return await response.json();
-                } catch (error) {
-                    console.error(`API request to ${endpoint} failed:`, error);
-                    throw error;
-                }
-            }
-            // --- END COPIED apiRequest function ---
-
-            function displayFormMessage(element, message, isSuccess = true) {
-                if(element) {
-                    element.textContent = message;
-                    element.className = `form-message ${isSuccess ? 'success' : 'error'}`;
-                    element.style.display = 'block';
-                }
+                } catch (error) { console.error(`API request tới ${endpoint} thất bại:`, error); throw error; }
             }
 
-            // Check if user is logged in
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            // const userToken = localStorage.getItem('userToken'); // You'll need a real token for backend auth
-
-            if (!userData) {
-                if (authMessageEl) {
-                    authMessageEl.innerHTML = 'Vui lòng <a href="#" id="loginLinkInMessage">đăng nhập</a> để tạo khóa học.';
-                    authMessageEl.className = 'form-message error';
+            function displayFormMessage(element, message, isSuccess = true, duration = 4000) {
+                if (!element) return;
+                element.textContent = message;
+                element.className = 'form-message'; 
+                element.classList.add(isSuccess ? 'success' : 'error');
+                element.classList.add('show');
+                if (element.timeoutId) clearTimeout(element.timeoutId);
+                if (duration > 0) {
+                    element.timeoutId = setTimeout(() => {
+                        element.classList.remove('show');
+                        setTimeout(() => { if (!element.classList.contains('show')) {}}, 300);
+                    }, duration);
+                } else if (duration === 0) {} 
+                else { element.classList.remove('show');}
+            }
+            
+            function checkUserLogin() {
+                const userDataString = localStorage.getItem('userData');
+                if (userDataString) {
+                    currentUser = JSON.parse(userDataString);
+                    authMessageEl.style.display = 'none';
+                    createCourseFormEl.style.display = 'block';
+                } else {
                     authMessageEl.style.display = 'block';
-
-                    const loginLinkInMessage = document.getElementById('loginLinkInMessage');
-                    if (loginLinkInMessage) {
-                        loginLinkInMessage.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            const loginModalEl = document.getElementById('loginModal');
-                             if (typeof openModal === 'function') {
-                                openModal(loginModalEl);
-                            } else if (loginModalEl) {
-                                loginModalEl.classList.add('show'); // Fallback
-                            }
-                        });
-                    }
+                    createCourseFormEl.style.display = 'none';
+                    loginLinkEl?.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const loginModalEl = document.getElementById('loginModal');
+                        if (typeof openModal === 'function') openModal(loginModalEl);
+                        else if (loginModalEl) { loginModalEl.classList.add('show'); document.body.style.overflow = 'hidden'; }
+                    });
                 }
-                if (createCourseForm) createCourseForm.style.display = 'none'; // Hide form if not logged in
             }
 
-
-            // Image preview for file upload
-            if (courseImageFileEl) {
-                courseImageFileEl.addEventListener('change', function(event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            if (imagePreview) imagePreview.src = e.target.result;
-                            if (imagePreviewContainer) imagePreviewContainer.style.display = 'block';
-                        }
-                        reader.readAsDataURL(file);
-                    } else {
-                        if (imagePreview) imagePreview.src = '#';
-                        if (imagePreviewContainer) imagePreviewContainer.style.display = 'none';
-                    }
-                });
-            }
-
-
-            if (createCourseForm) {
-                createCourseForm.addEventListener('submit', async function(event) {
-                    event.preventDefault();
-                    if (!userData) {
-                        displayFormMessage(createCourseMessageEl, 'Bạn cần đăng nhập để thực hiện hành động này.', false);
+            courseImageFileEl.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    if (file.size > 10 * 1024 * 1024) {
+                        displayFormMessage(globalFormMessageEl, 'Kích thước ảnh không được vượt quá 10MB.', false);
+                        courseImageFileEl.value = ""; 
+                        courseImagePreviewEl.style.display = 'none';
+                        courseImageToSaveUrlEl.value = '';
                         return;
                     }
-
-                    const formData = new FormData(createCourseForm);
-                    const courseData = {
-                        CourseName: formData.get('CourseName'),
-                        Decription: formData.get('Decription') || null,
-                        DetailCourse: formData.get('DetailCourse') || null,
-                        Price: parseFloat(formData.get('Price')) || 0,
-                        IsPublic: formData.get('IsPublic') === 'on', // Checkbox value
-                        Image: formData.get('Image') || null, // URL from text input
-                        UserID: userData.UserID // Get from logged-in user data
-                    };
-
-                    // Basic client-side validation
-                    if (!courseData.CourseName.trim()) {
-                        displayFormMessage(createCourseMessageEl, 'Tên khóa học không được để trống.', false);
-                        return;
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        courseImagePreviewEl.src = e.target.result;
+                        courseImagePreviewEl.style.display = 'block';
                     }
-
-                    // Handle image upload (more complex topic, basic placeholder for URL)
-                    // If you implement actual file upload to backend, you'd use FormData for the entire request.
-                    // For now, we assume Image field in schemas.CourseCreate is a URL.
-                    // If you want to upload the file, you'd need a different backend endpoint or modify create_course.
-                    // Let's assume if a file is selected, we'd ideally upload it and get a URL.
-                    // For this example, we'll prioritize the URL input if both are filled. If only file, we can't use it directly here without an upload step.
-
-                    const submitButton = createCourseForm.querySelector('button[type="submit"]');
-                    submitButton.disabled = true;
-                    submitButton.textContent = 'Đang xử lý...';
-
-                    try {
-                        // console.log("Sending course data:", courseData);
-                        const createdCourse = await apiRequest('/courses/', 'POST', courseData /*, userToken */); // Pass token if backend requires
-                        displayFormMessage(createCourseMessageEl, `Khóa học "${createdCourse.CourseName}" đã được tạo thành công!`, true);
-                        createCourseForm.reset();
-                        if (imagePreview) imagePreview.src = '#';
-                        if (imagePreviewContainer) imagePreviewContainer.style.display = 'none';
-
-                        // Optionally redirect to the new course page or a "my courses" page
-                        setTimeout(() => {
-                            window.location.href = `course-detail.html?id=${createdCourse.CourseID}`;
-                        }, 2000);
-
-                    } catch (error) {
-                        displayFormMessage(createCourseMessageEl, `Lỗi tạo khóa học: ${error.message}`, false);
-                    } finally {
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Tạo Khóa Học';
-                    }
-                });
-            }
-
-            // Footer year (copied from course-detail for consistency if script.js doesn't cover all pages)
-            const currentYearEl = document.getElementById('currentYear');
-            if (currentYearEl) {
-                currentYearEl.textContent = new Date().getFullYear();
-            }
-             // Page loader
-            window.addEventListener('load', () => {
-                const globalPageLoader = document.getElementById('page-loader');
-                if (globalPageLoader) {
-                    globalPageLoader.style.opacity = '0';
-                    setTimeout(() => {
-                        globalPageLoader.style.display = 'none';
-                    }, 500);
+                    reader.readAsDataURL(file);
+                    courseImageToSaveUrlEl.value = ''; 
+                } else {
+                    courseImagePreviewEl.style.display = 'none';
+                    courseImagePreviewEl.src = '#';
                 }
             });
+
+            createCourseFormEl.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                if (!currentUser || !currentUser.UserID) {
+                    displayFormMessage(globalFormMessageEl, 'Bạn cần đăng nhập để tạo khóa học.', false);
+                    return;
+                }
+                const originalButtonText = submitCreateCourseBtnEl.textContent;
+                submitCreateCourseBtnEl.disabled = true;
+                submitCreateCourseBtnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+                displayFormMessage(globalFormMessageEl, '', true, -1); 
+                let finalImageUrlForDB = courseImageToSaveUrlEl.value || null; 
+                if (courseImageFileEl.files.length > 0) {
+                    const imageFile = courseImageFileEl.files[0];
+                    const imageFormData = new FormData();
+                    imageFormData.append("file", imageFile);
+                    try {
+                        displayFormMessage(globalFormMessageEl, 'Đang tải ảnh bìa...', true, 0);
+                        const uploadResponse = await apiRequest('/uploadfile/?sub_folder=course_images', 'POST', imageFormData, null, true);
+                        if (uploadResponse && uploadResponse.file_url) {
+                            finalImageUrlForDB = uploadResponse.file_url; 
+                        } else { throw new Error("Không nhận được URL ảnh sau khi tải lên."); }
+                    } catch (error) {
+                        displayFormMessage(globalFormMessageEl, `Lỗi tải ảnh bìa: ${error.message}`, false);
+                        submitCreateCourseBtnEl.disabled = false;
+                        submitCreateCourseBtnEl.innerHTML = originalButtonText;
+                        return; 
+                    }
+                }
+                const coursePayload = {
+                    CourseName: courseNameInputEl.value.trim(),
+                    Decription: descriptionInputEl.value.trim() || null,
+                    DetailCourse: detailCourseInputEl.value.trim() || null,
+                    Price: parseFloat(priceInputEl.value) || 0,
+                    IsPublic: isPublicCheckboxEl.checked,
+                    Image: finalImageUrlForDB,
+                    UserID: currentUser.UserID
+                };
+                if (!coursePayload.CourseName) {
+                    displayFormMessage(globalFormMessageEl, 'Tên khóa học không được để trống.', false);
+                    submitCreateCourseBtnEl.disabled = false;
+                    submitCreateCourseBtnEl.innerHTML = originalButtonText;
+                    return;
+                }
+                try {
+                    displayFormMessage(globalFormMessageEl, 'Đang tạo khóa học...', true, 0);
+                    const createdCourse = await apiRequest('/courses/', 'POST', coursePayload);
+                    displayFormMessage(globalFormMessageEl, `Khóa học "${createdCourse.CourseName}" đã tạo thành công! Chuyển hướng...`, true, 3000);
+                    createCourseFormEl.reset();
+                    courseImagePreviewEl.style.display = 'none';
+                    courseImagePreviewEl.src = '#';
+                    courseImageToSaveUrlEl.value = '';
+                    setTimeout(() => { window.location.href = `course-detail.html?id=${createdCourse.CourseID}`; }, 3000);
+                } catch (error) {
+                    displayFormMessage(globalFormMessageEl, `Lỗi tạo khóa học: ${error.message}`, false);
+                } finally {
+                     // Không reset nút ở đây nếu đã chuyển hướng thành công
+                    if (window.location.href.indexOf(`course-detail.html?id=`) === -1) {
+                        submitCreateCourseBtnEl.disabled = false;
+                        submitCreateCourseBtnEl.innerHTML = originalButtonText;
+                    }
+                }
+            });
+
+            checkUserLogin();
+            window.addEventListener('load', () => { const pl=document.getElementById('page-loader'); if(pl){pl.style.opacity='0';setTimeout(()=>pl.style.display='none',500);}});
+            const cye=document.getElementById('currentYear'); if(cye)cye.textContent=new Date().getFullYear();
         });
     </script>
 </body>
