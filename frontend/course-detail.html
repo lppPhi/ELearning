@@ -193,6 +193,7 @@
     <div id="registerModal" class="modal"><div class="modal-content"><span class="close-btn" id="closeRegisterModal">×</span><h2>Đăng Ký</h2><form id="registerForm"><div class="form-group"><label for="registerUsername">Tên đăng nhập:</label><input type="text" id="registerUsername" name="UserName" required></div><div class="form-group"><label for="registerEmail">Email:</label><input type="email" id="registerEmail" name="Email" required></div><div class="form-group"><label for="registerPassword">Mật khẩu:</label><input type="password" id="registerPassword" name="Password" required></div><div class="form-group"><label for="registerPhone">Số điện thoại (tùy chọn):</label><input type="tel" id="registerPhone" name="Phone"></div><button type="submit" class="btn btn-primary btn-block">Đăng Ký</button><p class="form-message" id="registerMessage"></p><p class="switch-form">Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập</a></p></form></div></div>
 
     <script src="script.js"></script>
+    <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const API_BASE_URL = 'http://127.0.0.1:8000';
@@ -202,11 +203,13 @@
             const courseDetailContentEl = document.getElementById('course-detail-content');
             const courseImageSidebarDisplayEl = document.getElementById('course-image-sidebar-display');
             const courseTitleHeaderEl = document.getElementById('course-title-header');
+            const courseShortDescriptionHeaderEl = document.getElementById('course-short-description-header-text');
             const instructorAvatarHeaderEl = document.getElementById('instructor-avatar-header');
             const instructorNameHeaderEl = document.getElementById('instructor-name-header');
             const totalStudentsHeaderEl = document.getElementById('total-students-header');
             const totalChaptersHeaderEl = document.getElementById('total-chapters-header');
             const totalPartsHeaderEl = document.getElementById('total-parts-header');
+            const coursePriceHeaderMetaEl = document.getElementById('course-price-header-meta');
             const courseShortDescriptionSidebarEl = document.getElementById('course-short-description-sidebar');
             const coursePriceSidebarEl = document.getElementById('course-price-sidebar');
             const enrollButtonEl = document.getElementById('enroll-button');
@@ -272,65 +275,52 @@
                 currentCourseId = courseId;
                 courseDetailLoaderEl.style.display = 'block';
                 courseDetailContentEl.style.display = 'none';
-
                 try {
                     const course = await apiRequest(`/courses/${courseId}/detail`);
                     if (!course) { displayErrorPage(`Không tìm thấy thông tin cho khóa học ID: ${courseId}.`); return; }
                     currentCourseData = course;
-
                     const creator = await apiRequest(`/courses/${courseId}/creator`);
                     const chapters = await apiRequest(`/courses/${courseId}/chapters`);
-
                     setCourseImage(course.Image);
-
                     if (courseTitleHeaderEl) courseTitleHeaderEl.textContent = course.CourseName;
-                    if (courseShortDescriptionSidebarEl) courseShortDescriptionSidebarEl.textContent = course.Decription || 'Chưa có mô tả ngắn.';
+                    if (courseShortDescriptionHeaderEl) courseShortDescriptionHeaderEl.textContent = course.Decription || 'Khám phá nội dung chi tiết và bắt đầu hành trình học tập của bạn ngay hôm nay!';
                     if (coursePriceSidebarEl) {
                         coursePriceSidebarEl.textContent = parseFloat(course.Price) > 0 ? `$${parseFloat(course.Price).toFixed(2)}` : 'Miễn phí';
                         if (parseFloat(course.Price) <= 0) coursePriceSidebarEl.classList.add('free'); else coursePriceSidebarEl.classList.remove('free');
                     }
+                    if (coursePriceHeaderMetaEl) { coursePriceHeaderMetaEl.innerHTML = `<i class="fas fa-tag"></i> ${parseFloat(course.Price) > 0 ? '$'+parseFloat(course.Price).toFixed(2) : 'Miễn phí'}`; }
                     if (totalStudentsHeaderEl) totalStudentsHeaderEl.innerHTML = `<i class="fas fa-users"></i> ${course.NumberOfRegistrations || 0} học viên`;
                     if (sidebarStudentsCountEl) sidebarStudentsCountEl.textContent = course.NumberOfRegistrations || 0;
-                    
                     if (creator) {
-                        if (instructorAvatarHeaderEl) instructorAvatarHeaderEl.src = creator.Image ? (creator.Image.startsWith('http') ? creator.Image : `${STATIC_CONTENT_BASE_URL}${creator.Image}`) : 'images/default-avatar.png';
+                        const creatorAvatarUrl = creator.Image ? (creator.Image.startsWith('http') ? creator.Image : `${STATIC_CONTENT_BASE_URL}${creator.Image}`) : 'images/default-avatar.png';
+                        if (instructorAvatarHeaderEl) instructorAvatarHeaderEl.src = creatorAvatarUrl;
                         if (instructorNameHeaderEl) instructorNameHeaderEl.textContent = creator.UserName;
-                        if (instructorAvatarBioEl) instructorAvatarBioEl.src = creator.Image ? (creator.Image.startsWith('http') ? creator.Image : `${STATIC_CONTENT_BASE_URL}${creator.Image}`) : 'images/default-avatar.png';
+                        if (instructorAvatarBioEl) instructorAvatarBioEl.src = creatorAvatarUrl;
                         if (instructorNameBioEl) instructorNameBioEl.textContent = creator.UserName;
                         if (instructorEmailBioEl) instructorEmailBioEl.innerHTML = `<i class="fas fa-envelope"></i> Email: ${creator.Email}`;
                         if (instructorPhoneBioEl) instructorPhoneBioEl.innerHTML = creator.Phone ? `<i class="fas fa-phone"></i> Điện thoại: ${creator.Phone}` : '';
-                        if (instructorAdditionalInfoBioEl) instructorAdditionalInfoBioEl.textContent = `Giới thiệu về giảng viên ${creator.UserName}.`;
+                        if (instructorAdditionalInfoBioEl) instructorAdditionalInfoBioEl.textContent = `Giới thiệu về giảng viên ${creator.UserName}. Tham gia các khóa học khác của giảng viên để nâng cao kiến thức.`;
                     } else {
-                        if (instructorAdditionalInfoBioEl) instructorAdditionalInfoBioEl.textContent = 'Không có thông tin giảng viên.';
+                        if (instructorNameHeaderEl) instructorNameHeaderEl.textContent = "Không rõ";
+                        if (instructorAdditionalInfoBioEl) instructorAdditionalInfoBioEl.textContent = 'Không có thông tin giảng viên cho khóa học này.';
                     }
-                    if (courseLongDescriptionEl) courseLongDescriptionEl.textContent = course.DetailCourse || course.Decription || 'Không có mô tả chi tiết cho khóa học này.';
-                    
+                    if (courseLongDescriptionEl) courseLongDescriptionEl.innerHTML = course.DetailCourse || course.Decription || '<p>Không có mô tả chi tiết cho khóa học này.</p>';
+                    if (courseShortDescriptionSidebarEl) courseShortDescriptionSidebarEl.textContent = course.Decription || 'Chưa có mô tả ngắn.';
                     const manageBtnContainer = curriculumTabContentEl.querySelector('div[style*="text-align: right"]');
-                    if (!manageBtnContainer) { // Nếu chưa có, tạo mới
-                        const newManageBtnContainer = document.createElement('div');
-                        newManageBtnContainer.style.textAlign = 'right';
-                        newManageBtnContainer.style.marginBottom = '15px';
-                        const manageCurriculumBtnEl = document.createElement('a');
-                        manageCurriculumBtnEl.id = 'manage-curriculum-btn';
-                        manageCurriculumBtnEl.className = 'btn btn-secondary';
-                        manageCurriculumBtnEl.style.display = 'none';
-                        manageCurriculumBtnEl.innerHTML = '<i class="fas fa-cogs"></i> Thay đổi Chương trình học';
-                        newManageBtnContainer.appendChild(manageCurriculumBtnEl);
-                        curriculumTabContentEl.prepend(newManageBtnContainer); // Thêm vào đầu tab
+                    if (!manageBtnContainer) { 
+                        const newManageBtnContainer = document.createElement('div'); newManageBtnContainer.style.textAlign = 'right'; newManageBtnContainer.style.marginBottom = '15px';
+                        const manageCurriculumBtnEl = document.createElement('a'); manageCurriculumBtnEl.id = 'manage-curriculum-btn'; manageCurriculumBtnEl.className = 'btn btn-secondary'; manageCurriculumBtnEl.style.display = 'none'; manageCurriculumBtnEl.innerHTML = '<i class="fas fa-cogs"></i> Thay đổi CT Học';
+                        newManageBtnContainer.appendChild(manageCurriculumBtnEl); curriculumTabContentEl.prepend(newManageBtnContainer);
                     }
-                    // Xóa placeholder "Loading curriculum..." nếu nó là text node cuối cùng
-                    if (curriculumLoadingTextEl && curriculumLoadingTextEl.parentNode === curriculumTabContentEl) {
-                         curriculumTabContentEl.removeChild(curriculumLoadingTextEl);
-                    }
-
-
+                    const loadingText = curriculumTabContentEl.querySelector('p#curriculum-loading-text');
+                    if (loadingText) loadingText.remove();
                     let totalPartsCount = 0;
+                    Array.from(curriculumTabContentEl.getElementsByClassName('chapter')).forEach(el => el.remove());
+                    const noCurriculumMsg = curriculumTabContentEl.querySelector('.no-curriculum-message');
+                    if(noCurriculumMsg) noCurriculumMsg.remove();
                     if (chapters && chapters.length > 0) {
                         if (sidebarChaptersCountEl) sidebarChaptersCountEl.textContent = chapters.length;
                         if (totalChaptersHeaderEl) totalChaptersHeaderEl.innerHTML = `<i class="fas fa-layer-group"></i> ${chapters.length} chương`;
-                        // Xóa các chapter cũ trước khi render lại (nếu có)
-                        Array.from(curriculumTabContentEl.getElementsByClassName('chapter')).forEach(el => el.remove());
-
                         for (const chapter of chapters) {
                             const chapterElement = await createChapterElement(chapter);
                             curriculumTabContentEl.appendChild(chapterElement);
@@ -340,17 +330,12 @@
                     } else {
                         if (sidebarChaptersCountEl) sidebarChaptersCountEl.textContent = 0;
                         if (totalChaptersHeaderEl) totalChaptersHeaderEl.innerHTML = `<i class="fas fa-layer-group"></i> 0 chương`;
-                         Array.from(curriculumTabContentEl.getElementsByClassName('chapter')).forEach(el => el.remove()); // Xóa chapter cũ
-                        if (!curriculumTabContentEl.querySelector('.no-curriculum-message')) { // Tránh thêm nhiều lần
-                            const noContentPara = document.createElement('p');
-                            noContentPara.className = 'no-curriculum-message';
-                            noContentPara.textContent = 'Khóa học này chưa có nội dung chương mục.';
-                            curriculumTabContentEl.appendChild(noContentPara);
-                        }
+                        const noContentPara = document.createElement('p'); noContentPara.className = 'no-curriculum-message';
+                        noContentPara.textContent = 'Khóa học này chưa có nội dung chương mục.';
+                        curriculumTabContentEl.appendChild(noContentPara);
                     }
                     if (sidebarPartsCountEl) sidebarPartsCountEl.textContent = totalPartsCount;
                     if (totalPartsHeaderEl) totalPartsHeaderEl.innerHTML = `<i class="fas fa-list-ul"></i> ${totalPartsCount} bài học`;
-
                     const loggedInUserData = JSON.parse(localStorage.getItem('userData'));
                     const manageCurriculumBtnFromDOM = document.getElementById('manage-curriculum-btn');
                     if (loggedInUserData && creator && loggedInUserData.UserID === creator.UserID) {
@@ -362,7 +347,6 @@
                         if (deleteCourseButtonEl) deleteCourseButtonEl.style.display = 'none';
                         if (manageCurriculumBtnFromDOM) manageCurriculumBtnFromDOM.style.display = 'none';
                     }
-
                     courseDetailLoaderEl.style.display = 'none';
                     courseDetailContentEl.style.display = 'block';
                     checkAndUpdateEnrollmentStatus(); 
@@ -384,7 +368,7 @@
                             const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(part.Document) || /youtu\.be|youtube\.com/i.test(part.Document);
                             const icon = isVideo ? 'fa-video' : 'fa-file-alt';
                             const linkUrl = (part.Document.startsWith('http') ? part.Document : `${API_BASE_URL}${part.Document}`);
-                            docHTML = `<a href="${linkUrl}" target="_blank" class="part-document-link"><i class="fas ${icon}"></i> ${isVideo ? 'Xem' : 'Tài liệu'}</a>`;
+                           
                         }
                         partLi.innerHTML = `<span class="part-name"><i class="fas fa-play-circle"></i> ${part.PartName}</span>${docHTML}`;
                         partsUl.appendChild(partLi);
@@ -395,9 +379,65 @@
             }
             
             tabButtons.forEach(button => { button.addEventListener('click', () => { tabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); tabContents.forEach(content => content.classList.remove('active')); const activeTab = document.getElementById(button.dataset.tab); if (activeTab) activeTab.classList.add('active'); }); });
-            if (enrollButtonEl) { enrollButtonEl.addEventListener('click', async () => { /* ... */ });}
-            async function checkAndUpdateEnrollmentStatus() { /* ... */ }
-            async function handleDeleteCourse(courseId, courseName) { /* ... */ }
+            
+            if (enrollButtonEl) {
+                enrollButtonEl.addEventListener('click', async () => {
+                    const userData = JSON.parse(localStorage.getItem('userData'));
+                    if (!userData) {
+                        alert('Vui lòng đăng nhập để đăng ký khóa học.');
+                        const loginModalEl = document.getElementById('loginModal');
+                        if (typeof openModal === 'function') openModal(loginModalEl);
+                        else if (loginModalEl) loginModalEl.classList.add('show');
+                        return;
+                    }
+                    if (!currentCourseData) { alert('Thông tin khóa học chưa tải xong.'); return; }
+                    enrollButtonEl.disabled = true; enrollButtonEl.textContent = 'Đang xử lý...';
+                    try {
+                        await apiRequest('/registered-courses/', 'POST', { CourseID: currentCourseData.CourseID, UserID: userData.UserID });
+                        alert('Đăng ký khóa học thành công!');
+                        currentCourseData.NumberOfRegistrations = (currentCourseData.NumberOfRegistrations || 0) + 1;
+                        if (totalStudentsHeaderEl) totalStudentsHeaderEl.innerHTML = `<i class="fas fa-users"></i> ${currentCourseData.NumberOfRegistrations} học viên`;
+                        if (sidebarStudentsCountEl) sidebarStudentsCountEl.textContent = currentCourseData.NumberOfRegistrations;
+                        await checkAndUpdateEnrollmentStatus(); // Cập nhật lại trạng thái nút
+                    } catch (error) {
+                        console.error("Lỗi đăng ký:", error);
+                        alert(`Đăng ký thất bại: ${error.message}.`);
+                        enrollButtonEl.disabled = false; enrollButtonEl.textContent = 'Đăng Ký Học';
+                    }
+                });
+            }
+
+            async function checkAndUpdateEnrollmentStatus() {
+                const userData = JSON.parse(localStorage.getItem('userData'));
+                if (!userData || !currentCourseId) {
+                    if (enrollButtonEl) { enrollButtonEl.textContent = 'Đăng Ký Học'; enrollButtonEl.disabled = false; }
+                    return;
+                }
+                try {
+                    const registeredCourses = await apiRequest(`/users/${userData.UserID}/registered-courses`);
+                    const isRegistered = registeredCourses.some(reg => reg.CourseID === parseInt(currentCourseId));
+                    if (enrollButtonEl) {
+                        enrollButtonEl.textContent = isRegistered ? 'Đã Đăng Ký' : 'Đăng Ký Học';
+                        enrollButtonEl.disabled = isRegistered;
+                    }
+                } catch (error) {
+                    console.warn("Không thể kiểm tra trạng thái đăng ký:", error);
+                    if (enrollButtonEl) { enrollButtonEl.textContent = 'Đăng Ký Học'; enrollButtonEl.disabled = false; }
+                }
+            }
+
+            async function handleDeleteCourse(courseId, courseName) {
+                if (!confirm(`Xóa khóa học "${courseName}"?`)) return;
+                if(deleteCourseButtonEl) { deleteCourseButtonEl.disabled = true; deleteCourseButtonEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';}
+                try {
+                    await apiRequest(`/courses/${courseId}`, 'DELETE');
+                    alert(`Khóa học "${courseName}" đã xóa.`);
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    alert(`Lỗi xóa khóa học: ${error.message}.`);
+                    if(deleteCourseButtonEl) { deleteCourseButtonEl.disabled = false; deleteCourseButtonEl.innerHTML = '<i class="fas fa-trash-alt"></i> Xóa Khóa Học';}
+                }
+            }
 
             const courseIdToLoad = getCourseIdFromUrl();
             if (courseIdToLoad) { fetchAndDisplayCourseDetail(courseIdToLoad); }
