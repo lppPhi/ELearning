@@ -8,18 +8,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS đã cung cấp ở lần trước, giữ nguyên */
         .learn-course-layout { display: flex; min-height: calc(100vh - 80px); margin-top: 20px; }
         .learn-sidebar { width: 320px; background-color: var(--white-color); padding: 20px; overflow-y: auto; border-right: 1px solid var(--light-color); box-shadow: 2px 0 5px rgba(0,0,0,0.05); height: calc(100vh - 80px); position: sticky; top: 80px; }
         .learn-sidebar h3.course-title-sidebar { font-size: 1.4em; color: var(--primary-color); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--light-color); word-break: break-word; }
         .learn-sidebar .chapter-item { margin-bottom: 15px; }
-        .learn-sidebar .chapter-title { font-weight: 600; padding: 10px; background-color: #f0f2f5; border-radius: var(--border-radius); margin-bottom: 8px; cursor: default; font-size: 1.05em; }
+        .learn-sidebar .chapter-title { font-weight: 600; padding: 10px; background-color: #f0f2f5; border-radius: var(--border-radius); margin-bottom: 8px; cursor: default; font-size: 1.05em; display: flex; justify-content: space-between; align-items: center; }
+        .learn-sidebar .chapter-title .chapter-doc-icon { font-size: 0.8em; opacity: 0.7; margin-left: 8px;}
         .learn-sidebar .part-list { list-style: none; padding-left: 10px; }
         .learn-sidebar .part-item a { display: flex; align-items: center; padding: 9px 12px; color: var(--dark-color); text-decoration: none; border-radius: var(--border-radius); transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease; font-size: 0.9em; margin-bottom: 4px; }
         .learn-sidebar .part-item a:hover { background-color: var(--light-color); color: var(--primary-color); transform: translateX(3px); }
         .learn-sidebar .part-item a.active-part { background-color: var(--primary-color); color: var(--white-color); font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .learn-sidebar .part-item a i { margin-right: 10px; opacity: 0.6; font-size: 0.9em; }
-        .learn-sidebar .part-item a.active-part i { opacity: 1; }
+        .learn-sidebar .part-item a i.fa-play-circle { margin-right: 10px; opacity: 0.6; font-size: 0.9em; }
+        .learn-sidebar .part-item a.active-part i.fa-play-circle { opacity: 1; }
         .learn-sidebar .no-parts-message { font-size: 0.85em; color: var(--gray-color); padding-left: 25px; font-style: italic; }
         .learn-content-area { flex-grow: 1; padding: 20px 30px; overflow-y: auto; }
         .learn-content-area h2#current-part-title { font-size: 1.8em; margin-bottom: 20px; color: var(--dark-color); padding-bottom: 10px; border-bottom: 1px solid var(--light-color); }
@@ -37,41 +37,9 @@
     </style>
 </head>
 <body>
-    <div id="page-loader"> <div class="spinner"></div><p>Đang tải...</p> </div>
-    <header>
-        <div class="container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-graduation-cap"></i> E-Learn
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="index.html" class="active">Trang Chủ</a></li>
-                    <li><a href="#courses-section">Khóa Học</a></li>
-                    <!-- Sẽ thêm khi có trang tương ứng -->
-                    <!-- <li><a href="my-courses.html">Khóa Học Của Tôi</a></li> -->
-                </ul>
-            </nav>
-            <div class="auth-buttons">
-                <button id="loginBtn" class="btn btn-secondary">Đăng Nhập</button>
-                <button id="registerBtn" class="btn btn-primary">Đăng Ký</button>
-            </div>
-            <div id="userInfo" class="user-info" style="display:none;">
-                <img id="userAvatar" src="images/default-avatar.png" alt="Avatar" class="avatar">
-                <span id="usernameDisplay"></span>
-                <div class="dropdown">
-                    <button class="dropdown-btn"><i class="fas fa-chevron-down"></i></button>
-                    <div class="dropdown-content">
-                        <a href="profile.html" id="profileLink"><i class="fas fa-user"></i> Hồ sơ</a>
-                        <a href="my-courses.html" id="myCoursesLink"><i class="fas fa-book-open-reader"></i> Khóa học của tôi</a>
-                        <a href="create-course.html" id="createCourseLink"><i class="fas fa-plus-circle"></i> Tạo khóa học</a>
-                        <a href="index.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
-                    </div>
-                </div>
-            </div>
-            <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
-        </div>
-    </header>
-    <nav class="mobile-menu"> <!-- Mobile Menu HTML của bạn --> </nav>
+    <div id="page-loader"><div class="spinner"></div><p>Đang tải...</p></div>
+    <header><div class="container"><a href="index.html" class="logo"><i class="fas fa-graduation-cap"></i> E-Learn</a><nav><ul><li><a href="index.html">Trang Chủ</a></li><li><a href="index.html#courses-section">Khóa Học</a></li><li><a href="my-courses.html" id="myCoursesHeaderLink">Khóa Học Của Tôi</a></li></ul></nav><div class="auth-buttons" style="display: flex;"><button id="loginBtn" class="btn btn-secondary">Đăng Nhập</button><button id="registerBtn" class="btn btn-primary">Đăng Ký</button></div><div id="userInfo" class="user-info" style="display:none;"><img id="userAvatar" src="images/default-avatar.png" alt="Avatar" class="avatar"><span id="usernameDisplay"></span><div class="dropdown"><button class="dropdown-btn"><i class="fas fa-chevron-down"></i></button><div class="dropdown-content"><a href="profile.html" id="profileLink"><i class="fas fa-user"></i> Hồ sơ</a><a href="my-courses.html" id="myCoursesLink"><i class="fas fa-book-open-reader"></i> Khóa học của tôi</a><a href="create-course.html" id="createCourseLink"><i class="fas fa-plus-circle"></i> Tạo khóa học</a><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></div></div></div><button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button></div></header>
+    <nav class="mobile-menu"><ul><li><a href="index.html">Trang Chủ</a></li><li><a href="index.html#courses-section">Khóa Học</a></li><li><a href="my-courses.html">Khóa Học Của Tôi</a></li></ul><div class="mobile-auth-buttons" style="padding: 15px;"></div></nav>
 
     <main>
         <div id="auth-check-loader">
@@ -90,67 +58,23 @@
             <section class="learn-content-area">
                 <h2 id="current-part-title">Tên Phần Học</h2>
                 <div id="video-player-container" style="display: none;">
-                    <!-- Video player / PDF embed -->
                 </div>
                 <div id="document-viewer">
-                    <!-- Link tài liệu khác / Thông báo -->
                 </div>
             </section>
         </div>
     </main>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section about">
-                    <h3 class="logo-text"><i class="fas fa-graduation-cap"></i> E-Learn</h3>
-                    <p>
-                        E-Learn là nền tảng học trực tuyến hàng đầu, mang đến cơ hội tiếp cận tri thức
-                        chất lượng cao cho mọi người.
-                    </p>
-                    <div class="contact">
-                        <span><i class="fas fa-phone"></i>   123-456-7890</span>
-                        <span><i class="fas fa-envelope"></i>   info@elearn.com</span>
-                    </div>
-                    <div class="socials">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="footer-section links">
-                    <h3>Liên Kết Nhanh</h3>
-                    <ul>
-                        <li><a href="#">Về Chúng Tôi</a></li>
-                        <li><a href="#">Điều Khoản Dịch Vụ</a></li>
-                        <li><a href="#">Chính Sách Bảo Mật</a></li>
-                        <li><a href="#">Hỗ Trợ</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section contact-form-footer">
-                    <h3>Liên Hệ</h3>
-                    <form action="#" method="post">
-                        <input type="email" name="email" class="text-input contact-input" placeholder="Địa chỉ email của bạn...">
-                        <textarea rows="3" name="message" class="text-input contact-input" placeholder="Lời nhắn của bạn..."></textarea>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i> Gửi
-                        </button>
-                    </form>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                © <span id="currentYear"></span> E-Learn Platform | Designed by AI with Love
-            </div>
-        </div>
-    </footer>
-    <div id="loginModal" class="modal"> <!-- Login Modal HTML của bạn --> </div>
-    <div id="registerModal" class="modal"> <!-- Register Modal HTML của bạn --> </div>
+    <footer><div class="container"><div class="footer-content"><div class="footer-section about"><h3 class="logo-text"><i class="fas fa-graduation-cap"></i> E-Learn</h3><p>E-Learn là nền tảng học trực tuyến hàng đầu...</p></div><div class="footer-section links"><h3>Liên Kết Nhanh</h3><ul><li><a href="#">Về Chúng Tôi</a></li></ul></div><div class="footer-section contact-form-footer"><h3>Liên Hệ</h3><p><i class="fas fa-phone"></i>   123-456-7890</p><p><i class="fas fa-envelope"></i>   info@elearn.com</p></div></div><div class="footer-bottom">© <span id="currentYear"></span> E-Learn Platform | Designed by AI with Love</div></div></footer>
+    <div id="loginModal" class="modal"><div class="modal-content"><span class="close-btn" id="closeLoginModal">×</span><h2>Đăng Nhập</h2><form id="loginForm"><div class="form-group"><label for="loginUsername">Tên đăng nhập:</label><input type="text" id="loginUsername" name="UserName" required></div><div class="form-group"><label for="loginPassword">Mật khẩu:</label><input type="password" id="loginPassword" name="Password" required></div><button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button><p class="form-message" id="loginMessage"></p><p class="switch-form">Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a></p></form></div></div>
+    <div id="registerModal" class="modal"><div class="modal-content"><span class="close-btn" id="closeRegisterModal">×</span><h2>Đăng Ký</h2><form id="registerForm"><div class="form-group"><label for="registerUsername">Tên đăng nhập:</label><input type="text" id="registerUsername" name="UserName" required></div><div class="form-group"><label for="registerEmail">Email:</label><input type="email" id="registerEmail" name="Email" required></div><div class="form-group"><label for="registerPassword">Mật khẩu:</label><input type="password" id="registerPassword" name="Password" required></div><div class="form-group"><label for="registerPhone">Số điện thoại (tùy chọn):</label><input type="tel" id="registerPhone" name="Phone"></div><button type="submit" class="btn btn-primary btn-block">Đăng Ký</button><p class="form-message" id="registerMessage"></p><p class="switch-form">Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập</a></p></form></div></div>
 
-    <script src="script.js"></script> <!-- Script chung cho header/modal -->
+    <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const API_BASE_URL = 'http://127.0.0.1:8000';
+            const STATIC_CONTENT_BASE_URL = API_BASE_URL;
+
             const authCheckLoaderEl = document.getElementById('auth-check-loader');
             const learnCourseContentEl = document.getElementById('learn-course-content');
             const courseTitleSidebarEl = document.getElementById('course-title-sidebar-learn');
@@ -158,6 +82,7 @@
             const currentPartTitleEl = document.getElementById('current-part-title');
             const videoPlayerContainerEl = document.getElementById('video-player-container');
             const documentViewerEl = document.getElementById('document-viewer');
+
             let currentCourseId = null;
             let currentUser = null;
             let courseDataGlobal = null;
@@ -167,33 +92,32 @@
                 if (token) config.headers['Authorization'] = `Bearer ${token}`;
                 if (data && (method === 'POST' || method === 'PUT')) config.body = JSON.stringify(data);
                 try {
-                    // console.log(`[API Request] Sending ${method} to ${API_BASE_URL}${endpoint}`);
                     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-                    // console.log(`[API Response] Status: ${response.status} for ${endpoint}`);
                     if (!response.ok) {
                         let errorDetailMessage = `HTTP error ${response.status}`;
                         try { const errorData = await response.json(); errorDetailMessage = errorData.detail || JSON.stringify(errorData) || errorDetailMessage; }
                         catch (e) { const textError = await response.text().catch(()=>""); errorDetailMessage = textError || errorDetailMessage; }
-                        // console.error(`[API Error] for ${endpoint}: ${errorDetailMessage}`);
                         throw new Error(errorDetailMessage);
                     }
-                    if (response.status === 204 || response.headers.get("content-length") === "0") { /*console.log(`[API Response] No content for ${endpoint}`);*/ return null; }
-                    const jsonData = await response.json();
-                    // console.log(`[API Response] Data for ${endpoint}:`, jsonData);
-                    return jsonData;
-                } catch (error) { /*console.error(`[API Exception] Request to ${endpoint} failed:`, error);*/ throw error; }
+                    if (response.status === 204 || response.headers.get("content-length") === "0") return null;
+                    return await response.json();
+                } catch (error) { console.error(`API request to ${endpoint} failed:`, error); throw error; }
             }
 
             function getCourseIdFromUrl() { return new URLSearchParams(window.location.search).get('courseId'); }
-            function displayError(message) { console.error("Displaying Error on page:", message); authCheckLoaderEl.innerHTML = `<div class="error-message-container"><i class="fas fa-exclamation-triangle"></i><p class="error-message">${message}</p><a href="index.html" class="btn btn-primary" style="margin-top:15px;">Về Trang Chủ</a></div>`; learnCourseContentEl.style.display = 'none'; authCheckLoaderEl.style.display = 'flex'; }
+            function displayError(message) { authCheckLoaderEl.innerHTML = `<div class="error-message-container"><i class="fas fa-exclamation-triangle"></i><p class="error-message">${message}</p><a href="index.html" class="btn btn-primary" style="margin-top:15px;">Về Trang Chủ</a></div>`; learnCourseContentEl.style.display = 'none'; authCheckLoaderEl.style.display = 'flex'; }
 
             async function initializeLearnPage() {
                 currentUser = JSON.parse(localStorage.getItem('userData'));
                 currentCourseId = getCourseIdFromUrl();
-                // console.log("Learn Page - Current Course ID from URL:", currentCourseId);
 
                 if (!currentCourseId) { displayError('Lỗi: Không tìm thấy ID khóa học trên URL.'); return; }
-                if (!currentUser) { /* ... login prompt logic ... */ authCheckLoaderEl.innerHTML = `...`; return; }
+                if (!currentUser) {
+                    authCheckLoaderEl.innerHTML = `<div class="error-message-container"><i class="fas fa-user-lock"></i><p>Vui lòng <a href="#" id="loginLinkLearn">đăng nhập</a> để học khóa học này.</p></div>`;
+                    learnCourseContentEl.style.display = 'none'; authCheckLoaderEl.style.display = 'flex';
+                    document.getElementById('loginLinkLearn')?.addEventListener('click', (e) => { e.preventDefault(); const lm = document.getElementById('loginModal'); if (typeof openModal === 'function') openModal(lm); else if (lm) {lm.classList.add('show');document.body.style.overflow = 'hidden';}});
+                    return;
+                }
 
                 try {
                     const courseBasicInfo = await apiRequest(`/courses/${currentCourseId}`);
@@ -201,7 +125,7 @@
                     courseTitleSidebarEl.textContent = courseBasicInfo.CourseName;
 
                     const chapters = await apiRequest(`/courses/${currentCourseId}/chapters`);
-                    courseDataGlobal = { ...courseBasicInfo, chapters: [] }; // Khởi tạo courseDataGlobal ở đây
+                    courseDataGlobal = { ...courseBasicInfo, chapters: [] };
 
                     if (chapters && chapters.length > 0) {
                         for (const chapter of chapters) {
@@ -210,18 +134,15 @@
                         }
                     }
                     
-                    renderCurriculumNavigation(courseDataGlobal.chapters); // Gọi render sau khi đã có đủ dữ liệu
+                    renderCurriculumNavigation(courseDataGlobal.chapters);
                     
                     let firstPartToLoad = null;
-                    if (courseDataGlobal.chapters.length > 0 && 
-                        courseDataGlobal.chapters[0].parts && 
-                        courseDataGlobal.chapters[0].parts.length > 0) {
+                    if (courseDataGlobal.chapters.length > 0 && courseDataGlobal.chapters[0].parts && courseDataGlobal.chapters[0].parts.length > 0) {
                         firstPartToLoad = courseDataGlobal.chapters[0].parts[0];
                     }
                     
                     if (firstPartToLoad) {
                         loadPartContent(firstPartToLoad);
-                        // Đảm bảo DOM đã render xong trước khi querySelector
                         setTimeout(() => {
                             const firstPartLink = curriculumNavListEl.querySelector(`.part-item a[data-part-id="${firstPartToLoad.PartID}"]`);
                             if (firstPartLink) {
@@ -234,66 +155,47 @@
                         videoPlayerContainerEl.style.display = 'none';
                         documentViewerEl.innerHTML = '<div class="no-content-message"><i class="fas fa-info-circle"></i><p>Khóa học này chưa có nội dung bài học hoặc phần đầu tiên chưa có nội dung. Vui lòng chọn một phần học từ sidebar (nếu có).</p></div>';
                     }
-
                     authCheckLoaderEl.style.display = 'none';
                     learnCourseContentEl.style.display = 'flex';
-
-                } catch (error) {
-                    console.error("Error initializing learn page:", error.message);
-                    displayError(`Lỗi tải trang học: ${error.message}`);
-                }
+                } catch (error) { displayError(`Lỗi tải trang học: ${error.message}`); }
             }
 
             function renderCurriculumNavigation(chapters) {
-                curriculumNavListEl.innerHTML = ''; // Xóa placeholder "Đang tải chương trình học..."
+                curriculumNavListEl.innerHTML = '';
                 if (!chapters || chapters.length === 0) {
                     curriculumNavListEl.innerHTML = '<p style="padding:10px; font-style:italic;">Khóa học này chưa có chương trình học.</p>';
                     return;
                 }
-
                 chapters.forEach((chapter, chapterIndex) => {
-                    const chapterDiv = document.createElement('div');
-                    chapterDiv.className = 'chapter-item';
-                    const chapterTitle = document.createElement('div');
-                    chapterTitle.className = 'chapter-title';
-                    chapterTitle.textContent = `${chapterIndex + 1}. ${chapter.ChapterName}`;
-                    // Hiển thị tài liệu của chương nếu có
+                    const chapterDiv = document.createElement('div'); chapterDiv.className = 'chapter-item';
+                    const chapterTitle = document.createElement('div'); chapterTitle.className = 'chapter-title';
+                    const chapterNameSpan = document.createElement('span'); chapterNameSpan.textContent = `${chapterIndex + 1}. ${chapter.ChapterName}`;
+                    chapterTitle.appendChild(chapterNameSpan);
                     if (chapter.Document) {
                         const docLink = document.createElement('a');
-                        docLink.href = (chapter.Document.startsWith('http') ? chapter.Document : `${API_BASE_URL}${chapter.Document}`);
-                        docLink.target = "_blank";
-                        docLink.innerHTML = ` <i class="fas fa-file-alt" style="font-size:0.8em; opacity:0.7;"></i>`;
-                        docLink.title = "Tài liệu chương";
+                        docLink.href = (chapter.Document.startsWith('http') ? chapter.Document : `${STATIC_CONTENT_BASE_URL}${chapter.Document}`);
+                        docLink.target = "_blank"; docLink.title = "Tài liệu chương";
+                        docLink.innerHTML = `<i class="fas fa-file-alt chapter-doc-icon"></i>`;
                         chapterTitle.appendChild(docLink);
                     }
                     chapterDiv.appendChild(chapterTitle);
-
-
                     if (chapter.parts && chapter.parts.length > 0) {
-                        const partsUl = document.createElement('ul');
-                        partsUl.className = 'part-list';
+                        const partsUl = document.createElement('ul'); partsUl.className = 'part-list';
                         chapter.parts.forEach((part) => {
-                            const partLi = document.createElement('li');
-                            partLi.className = 'part-item';
-                            const partLink = document.createElement('a');
-                            partLink.href = '#';
-                            partLink.dataset.partId = part.PartID;
+                            const partLi = document.createElement('li'); partLi.className = 'part-item';
+                            const partLink = document.createElement('a'); partLink.href = '#'; partLink.dataset.partId = part.PartID;
                             partLink.innerHTML = `<i class="fas fa-play-circle"></i> ${part.PartName}`;
                             partLink.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                loadPartContent(part);
+                                e.preventDefault(); loadPartContent(part);
                                 document.querySelectorAll('.learn-sidebar .part-item a').forEach(a => a.classList.remove('active-part'));
                                 partLink.classList.add('active-part');
                             });
-                            partLi.appendChild(partLink);
-                            partsUl.appendChild(partLi);
+                            partLi.appendChild(partLink); partsUl.appendChild(partLi);
                         });
                         chapterDiv.appendChild(partsUl);
                     } else {
-                        const noPartsP = document.createElement('p');
-                        noPartsP.className = 'no-parts-message';
-                        noPartsP.textContent = 'Chương này chưa có phần học.';
-                        chapterDiv.appendChild(noPartsP);
+                        const noPartsP = document.createElement('p'); noPartsP.className = 'no-parts-message';
+                        noPartsP.textContent = 'Chương này chưa có phần học.'; chapterDiv.appendChild(noPartsP);
                     }
                     curriculumNavListEl.appendChild(chapterDiv);
                 });
@@ -301,40 +203,37 @@
 
             function loadPartContent(part) {
                 currentPartTitleEl.textContent = part.PartName;
-                videoPlayerContainerEl.innerHTML = '';
-                documentViewerEl.innerHTML = '';
-                videoPlayerContainerEl.style.display = 'none';
+                videoPlayerContainerEl.innerHTML = ''; documentViewerEl.innerHTML = '';
+                videoPlayerContainerEl.style.display = 'none'; 
 
                 if (!part.Document) {
                     documentViewerEl.innerHTML = '<div class="no-content-message"><i class="far fa-file-alt"></i><p>Phần học này chưa có tài liệu.</p></div>';
                     return;
                 }
-
                 const docUrl = part.Document;
-                const fullDocUrl = (docUrl.startsWith('http://') || docUrl.startsWith('https://')) ? docUrl : `${API_BASE_URL}${docUrl}`;
+                const fullDocUrl = (docUrl.startsWith('http://') || docUrl.startsWith('https://')) ? docUrl : `${STATIC_CONTENT_BASE_URL}${docUrl}`;
                 const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
                 const youtubeMatch = fullDocUrl.match(youtubeRegex);
 
                 if (youtubeMatch && youtubeMatch[1]) {
                     videoPlayerContainerEl.style.display = 'block';
                     const videoId = youtubeMatch[1];
-                    videoPlayerContainerEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                    videoPlayerContainerEl.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
                 } else if (fullDocUrl.match(/\.(mp4|webm|ogg|mov)$/i)) {
                     videoPlayerContainerEl.style.display = 'block';
                     videoPlayerContainerEl.innerHTML = `<video controls autoplay width="100%"><source src="${fullDocUrl}" type="video/${fullDocUrl.split('.').pop().toLowerCase()}">Trình duyệt của bạn không hỗ trợ thẻ video.</video>`;
                 } else if (fullDocUrl.match(/\.(pdf)$/i)) {
                     videoPlayerContainerEl.style.display = 'block';
-                    videoPlayerContainerEl.innerHTML = `<iframe src="${fullDocUrl}" width="100%" height="100%"></iframe>`;
+                    videoPlayerContainerEl.innerHTML = `<iframe src="${fullDocUrl}" width="100%" height="100%" title="PDF Viewer"></iframe>`;
                     documentViewerEl.innerHTML = `<p style="margin-top:10px; text-align:center;">Không xem được PDF? <a href="${fullDocUrl}" target="_blank" class="btn btn-secondary download-link"><i class="fas fa-file-pdf"></i> Mở/Tải PDF</a></p>`;
-                } else { // Các loại tài liệu khác (Word, Ppt, link web...)
+                } else {
                     documentViewerEl.innerHTML = `<p>Tài liệu tham khảo: <a href="${fullDocUrl}" target="_blank" class="btn btn-info download-link"><i class="fas fa-external-link-alt"></i> Mở Tài Liệu</a></p>`;
                 }
             }
 
             initializeLearnPage();
-
-            window.addEventListener('load', () => { /* ... page loader ... */ });
-            const currentYearEl = document.getElementById('currentYear'); if (currentYearEl) currentYearEl.textContent = new Date().getFullYear();
+            window.addEventListener('load', () => { const pl=document.getElementById('page-loader'); if(pl){pl.style.opacity='0';setTimeout(()=>pl.style.display='none',500);}});
+            const cye=document.getElementById('currentYear'); if(cye)cye.textContent=new Date().getFullYear();
         });
     </script>
 </body>

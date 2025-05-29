@@ -17,6 +17,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 UPLOAD_BASE_DIR = os.path.join(STATIC_DIR, "uploads")
 os.makedirs(UPLOAD_BASE_DIR, exist_ok=True)
+CHAPTER_DOCS_DIR = os.path.join(UPLOAD_BASE_DIR, "chapter_documents")
+os.makedirs(CHAPTER_DOCS_DIR, exist_ok=True)
+PART_DOCS_DIR = os.path.join(UPLOAD_BASE_DIR, "part_documents")
+os.makedirs(PART_DOCS_DIR, exist_ok=True)
 COURSE_IMAGES_DIR = os.path.join(UPLOAD_BASE_DIR, "course_images")
 os.makedirs(COURSE_IMAGES_DIR, exist_ok=True)
 AVATARS_DIR = os.path.join(UPLOAD_BASE_DIR, "avatars") # Thêm thư mục cho avatar
@@ -93,6 +97,100 @@ async def upload_course_image_endpoint(file: UploadFile = File(...)):
     relative_file_url = f"/static/uploads/course_images/{unique_filename}"
         
     return schemas.FileUploadResponse(filename=unique_filename, file_url=relative_file_url)
+
+@app.post("/uploadchapterdocument/", response_model=schemas.FileUploadResponse, tags=["File Uploads", "Chapters"])
+async def upload_chapter_document_endpoint(file: UploadFile = File(...)):
+    target_dir = CHAPTER_DOCS_DIR
+    # Bạn có thể tùy chỉnh allowed_extensions và MAX_FILE_SIZE cho tài liệu chapter
+    allowed_extensions = ('.mp4', '.mov', '.webm', '.ogg', '.pdf', '.doc', '.docx', '.ppt', '.pptx', '.txt', '.jpg', '.png')
+    file_ext = os.path.splitext(file.filename)[1].lower()
+    if file_ext not in allowed_extensions:
+         raise HTTPException(status_code=400, detail=f"Định dạng file không hợp lệ. Chấp nhận: {', '.join(allowed_extensions)}")
+    MAX_FILE_SIZE = 200 * 1024 * 1024 # 200MB cho tài liệu/video
+
+    temp_file_id = uuid.uuid4().hex
+    temp_file_path = os.path.join(target_dir, f"temp_{temp_file_id}{file_ext}")
+    file_content_length = 0
+    try:
+        with open(temp_file_path, "wb") as temp_buffer:
+            chunk_size = 4096
+            while True:
+                chunk = await file.read(chunk_size)
+                if not chunk: break
+                file_content_length += len(chunk)
+                if file_content_length > MAX_FILE_SIZE:
+                    raise HTTPException(status_code=413, detail=f"Kích thước file quá lớn. Tối đa {MAX_FILE_SIZE // (1024*1024)}MB.")
+                temp_buffer.write(chunk)
+    except HTTPException as http_exc:
+        if os.path.exists(temp_file_path): os.remove(temp_file_path)
+        await file.close()
+        raise http_exc
+    except Exception as e:
+        if os.path.exists(temp_file_path): os.remove(temp_file_path)
+        print(f"Lỗi khi ghi file tạm (chapter_doc): {e}")
+        await file.close()
+        raise HTTPException(status_code=500, detail="Lỗi khi xử lý file upload tài liệu chương.")
+
+    unique_filename = f"{uuid.uuid4().hex}{file_ext}"
+    final_file_path = os.path.join(target_dir, unique_filename)
+    try:
+        shutil.move(temp_file_path, final_file_path)
+    except Exception as e:
+        if os.path.exists(temp_file_path): os.remove(temp_file_path)
+        print(f"Lỗi di chuyển file tạm (chapter_doc): {e}")
+        raise HTTPException(status_code=500, detail="Không thể hoàn tất lưu file tài liệu chương.")
+    
+    await file.close()
+    file_url = f"/static/uploads/chapter_documents/{unique_filename}"
+    return schemas.FileUploadResponse(filename=unique_filename, file_url=file_url)
+
+
+# --- Endpoint Upload Tài liệu Part ---
+@app.post("/uploadpartdocument/", response_model=schemas.FileUploadResponse, tags=["File Uploads", "Parts"])
+async def upload_part_document_endpoint(file: UploadFile = File(...)):
+    target_dir = PART_DOCS_DIR
+    allowed_extensions = ('.mp4', '.mov', '.webm', '.ogg', '.pdf', '.doc', '.docx', '.ppt', '.pptx', '.txt', '.jpg', '.png')
+    file_ext = os.path.splitext(file.filename)[1].lower()
+    if file_ext not in allowed_extensions:
+         raise HTTPException(status_code=400, detail=f"Định dạng file không hợp lệ. Chấp nhận: {', '.join(allowed_extensions)}")
+    MAX_FILE_SIZE = 200 * 1024 * 1024 # 200MB
+
+    temp_file_id = uuid.uuid4().hex
+    temp_file_path = os.path.join(target_dir, f"temp_{temp_file_id}{file_ext}")
+    file_content_length = 0
+    try:
+        with open(temp_file_path, "wb") as temp_buffer:
+            chunk_size = 4096
+            while True:
+                chunk = await file.read(chunk_size)
+                if not chunk: break
+                file_content_length += len(chunk)
+                if file_content_length > MAX_FILE_SIZE:
+                    raise HTTPException(status_code=413, detail=f"Kích thước file quá lớn. Tối đa {MAX_FILE_SIZE // (1024*1024)}MB.")
+                temp_buffer.write(chunk)
+    except HTTPException as http_exc:
+        if os.path.exists(temp_file_path): os.remove(temp_file_path)
+        await file.close()
+        raise http_exc
+    except Exception as e:
+        if os.path.exists(temp_file_path): os.remove(temp_file_path)
+        print(f"Lỗi khi ghi file tạm (part_doc): {e}")
+        await file.close()
+        raise HTTPException(status_code=500, detail="Lỗi khi xử lý file upload tài liệu phần học.")
+    
+    unique_filename = f"{uuid.uuid4().hex}{file_ext}"
+    final_file_path = os.path.join(target_dir, unique_filename)
+    try:
+        shutil.move(temp_file_path, final_file_path)
+    except Exception as e:
+        if os.path.exists(temp_file_path): os.remove(temp_file_path)
+        print(f"Lỗi di chuyển file tạm (part_doc): {e}")
+        raise HTTPException(status_code=500, detail="Không thể hoàn tất lưu file tài liệu phần học.")
+
+    await file.close()
+    file_url = f"/static/uploads/part_documents/{unique_filename}"
+    return schemas.FileUploadResponse(filename=unique_filename, file_url=file_url)
+
 
 # ... (Các endpoint USER, COURSE, CHAPTER, PART, REGISTERED COURSE giữ nguyên như phiên bản đầy đủ trước đó) ...
 @app.post("/users/", response_model=schemas.UserInfo, tags=["Users"])
