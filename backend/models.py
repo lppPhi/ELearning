@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, DECIMAL
 from sqlalchemy.orm import relationship
 from database import Base
+from sqlalchemy.dialects.mssql import NVARCHAR, NTEXT
 
 class User(Base):
     __tablename__ = "Users"
