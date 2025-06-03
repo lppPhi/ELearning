@@ -584,6 +584,8 @@ header nav ul li a:hover::after {
 }
 
 /* --- Footer --- */
+/* --- Sticky layout support --- */
+
 footer {
     background-color: var(--dark-color);
     color: var(--light-color);

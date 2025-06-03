@@ -33,46 +33,100 @@
         .form-message { text-align: center; margin-top: 10px; font-size: 0.9em;}
         .current-document-link {font-size: 0.85em; color: #333; margin-bottom: 5px; display: block; word-break: break-all;}
         .current-document-link a {color: var(--accent-color);}
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
     </style>
 </head>
 <body>
-    <div id="page-loader"><div class="spinner"></div><p>Đang tải...</p></div>
-    <header></header>
-    <nav class="mobile-menu"></nav>
-
-    <main>
-        <div class="manage-curriculum-container">
-            <h1>Quản Lý Chương Trình Học</h1>
-            <p id="course-title-display" class="course-title-display">Cho khóa học: <span id="courseNameDisplayLoading">Đang tải...</span></p>
-            <div id="auth-message-curriculum" style="display:none;"></div>
-            <div id="loader"><div class="spinner"></div> Đang tải...</div>
-            <p class="form-message" id="globalCurriculumMessage"></p>
-
-            <div id="curriculum-content" style="display:none;">
-                <button id="add-chapter-btn-main" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Thêm Chương Mới</button>
-                <div id="add-chapter-form-container" class="add-item-form" style="margin-bottom: 20px;">
-                    <h4>Thêm Chương Mới</h4>
-                    <form id="addChapterForm">
-                        <div class="form-group">
-                            <label for="newChapterName">Tên Chương <span style="color:red;">*</span></label>
-                            <input type="text" id="newChapterName" placeholder="Tên chương" required class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="newChapterDocumentFile">Upload Tài liệu/Video cho Chương (Tùy chọn)</label>
-                            <input type="file" id="newChapterDocumentFile" class="form-control" accept="video/*,application/pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.png">
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-success">Lưu Chương</button>
-                            <button type="button" class="btn btn-secondary cancel-add-btn">Hủy</button>
-                        </div>
-                    </form>
+    <div class="wrapper">
+        <div id="page-loader"><div class="spinner"></div><p>Đang tải...</p></div>
+            <header>
+            <div class="container">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-graduation-cap"></i> E-Learn
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="index.html" class="active">Trang Chủ</a></li>
+                        <li><a href="#courses-section">Khóa Học</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-buttons">
+                    <button id="loginBtn" class="btn btn-secondary">Đăng Nhập</button>
+                    <button id="registerBtn" class="btn btn-primary">Đăng Ký</button>
                 </div>
-                <div id="chapters-list"></div>
+                <div id="userInfo" class="user-info" style="display:none;">
+                    <img id="userAvatar" src="images/nophoto.png" alt="Avatar" class="avatar">
+                    <span id="usernameDisplay"></span>
+                    <div class="dropdown">
+                        <button class="dropdown-btn"><i class="fas fa-chevron-down"></i></button>
+                        <div class="dropdown-content">
+                            <a href="profile.html" id="profileLink"><i class="fas fa-user"></i> Hồ sơ</a>
+                            <a href="my-courses.html" id="myCoursesLink"><i class="fas fa-book-open-reader"></i> Khóa học của tôi</a>
+                            <a href="create-course.html" id="createCourseLink"><i class="fas fa-plus-circle"></i> Tạo khóa học</a>
+                            <a href="index.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
             </div>
-        </div>
-    </main>
+        </header>
+        <nav class="mobile-menu"></nav>
 
-    <footer></footer>
+        <main class="main-content">
+            <div class="manage-curriculum-container">
+                <h1>Quản Lý Chương Trình Học</h1>
+                <p id="course-title-display" class="course-title-display">Cho khóa học: <span id="courseNameDisplayLoading">Đang tải...</span></p>
+                <div id="auth-message-curriculum" style="display:none;"></div>
+                <div id="loader"><div class="spinner"></div> Đang tải...</div>
+                <p class="form-message" id="globalCurriculumMessage"></p>
+
+                <div id="curriculum-content" style="display:none;">
+                    <button id="add-chapter-btn-main" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Thêm Chương Mới</button>
+                    <div id="add-chapter-form-container" class="add-item-form" style="margin-bottom: 20px;">
+                        <h4>Thêm Chương Mới</h4>
+                        <form id="addChapterForm">
+                            <div class="form-group">
+                                <label for="newChapterName">Tên Chương <span style="color:red;">*</span></label>
+                                <input type="text" id="newChapterName" placeholder="Tên chương" required class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="newChapterDocumentFile">Upload Tài liệu/Video cho Chương (Tùy chọn)</label>
+                                <input type="file" id="newChapterDocumentFile" class="form-control" accept="video/*,application/pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.png">
+                                <video id="chapterVideoPreview" controls style="display: none; margin-top: 10px; max-width: 100%; height: auto;"></video>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-success">Lưu Chương</button>
+                                <button type="button" class="btn btn-secondary cancel-add-btn">Hủy</button>
+                            </div>
+                        </form>
+                        
+                    </div>
+                    <div style="text-align: right; margin-top: -10px; margin-bottom: 10px;">
+                        <a href="my-courses.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Quay lại</a>
+                    </div>
+
+                    <div id="chapters-list"></div>
+                </div>
+            </div>
+        </main>
+        <footer><div class="container"><div class="footer-content"><div class="footer-section about"><h3 class="logo-text"><i class="fas fa-graduation-cap"></i> E-Learn</h3><p>E-Learn là nền tảng học trực tuyến hàng đầu...</p></div><div class="footer-section links"><h3>Liên Kết Nhanh</h3><ul><li><a href="#">Về Chúng Tôi</a></li></ul></div><div class="footer-section contact-form-footer"><h3>Liên Hệ</h3><p><i class="fas fa-phone"></i>   123-456-7890</p><p><i class="fas fa-envelope"></i>   info@elearn.com</p></div></div><div class="footer-bottom">© <span id="currentYear"></span> E-Learn Platform | Designed by AI with Love</div></div></footer>
+    </div>
     <div id="editItemModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="closeEditModal">×</span>
@@ -100,7 +154,7 @@
     </div>
     <div id="loginModal" class="modal"></div>
     <div id="registerModal" class="modal"></div>
-
+    
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -117,6 +171,8 @@
             const addChapterFormEl = document.getElementById('addChapterForm');
             const newChapterNameInputEl = document.getElementById('newChapterName');
             const newChapterDocumentFileEl = document.getElementById('newChapterDocumentFile');
+            const chapterVideoPreviewEl = document.getElementById('chapterVideoPreview');
+
             const globalCurriculumMessageEl = document.getElementById('globalCurriculumMessage');
 
             const editItemModalEl = document.getElementById('editItemModal');
@@ -133,6 +189,18 @@
 
             let currentCourseId = null;
             let courseCreatorId = null;
+            newChapterDocumentFileEl.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file && file.type.startsWith('video/')) {
+                    const videoURL = URL.createObjectURL(file);
+                    chapterVideoPreviewEl.src = videoURL;
+                    chapterVideoPreviewEl.style.display = 'block';
+                } else {
+                    chapterVideoPreviewEl.style.display = 'none';
+                    chapterVideoPreviewEl.src = '';
+                }
+            });
+
 
             async function apiRequest(endpoint, method = 'GET', data = null, token = null, isFormData = false) {
                 const config = { method: method, headers: {} };
@@ -239,13 +307,37 @@
             async function createChapterElement(chapter) {
                 const div = document.createElement('div'); div.className = 'chapter-management-item'; div.dataset.chapterId = chapter.ChapterID;
                 let docLinkHTML = chapter.Document ? `<span class="part-document-display">Tài liệu: <a href="${chapter.Document.startsWith('http') ? chapter.Document : STATIC_CONTENT_BASE_URL + chapter.Document}" target="_blank">${chapter.Document.split('/').pop().substring(0,30)}...</a></span><br>` : '';
-                div.innerHTML = `<div class="chapter-header-manage"><h3>${chapter.ChapterName}</h3><div class="chapter-actions"><button class="btn btn-sm btn-info edit-chapter-btn"><i class="fas fa-edit"></i> Sửa</button><button class="btn btn-sm btn-danger delete-chapter-btn"><i class="fas fa-trash-alt"></i> Xóa</button></div></div>${docLinkHTML}<div class="parts-list-manage"><h4>Phần học:</h4><ul id="parts-for-chapter-${chapter.ChapterID}"><div class="spinner-small"></div></ul><button class="btn btn-sm btn-success add-part-btn" style="margin-top:10px;"><i class="fas fa-plus"></i> Thêm Phần Học</button><div class="add-item-form add-part-form-for-chapter-${chapter.ChapterID}" style="margin-top:10px;"><h4>Thêm Phần Học Mới cho "${chapter.ChapterName}"</h4><form class="addPartForm"><input type="hidden" name="chapterId" value="${chapter.ChapterID}"><div class="form-group"><label>Tên Phần Học <span style="color:red;">*</span></label><input type="text" name="partName" placeholder="Tên phần học" required class="form-control"></div><div class="form-group"><label>Upload Tài liệu/Video (Tùy chọn)</label><input type="file" name="partDocumentFile" class="form-control" accept="video/*,application/pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.png"></div><div class="form-actions"><button type="submit" class="btn btn-success btn-sm">Lưu Phần</button><button type="button" class="btn btn-secondary btn-sm cancel-add-btn" style="margin-left:5px;">Hủy</button></div></form></div></div>`;
+                div.innerHTML = `<div class="chapter-header-manage"><h3>${chapter.ChapterName}</h3><div class="chapter-actions"><button class="btn btn-sm btn-info edit-chapter-btn"><i class="fas fa-edit"></i> Sửa</button><button class="btn btn-sm btn-danger delete-chapter-btn"><i class="fas fa-trash-alt"></i> Xóa</button></div></div>${docLinkHTML}<div class="parts-list-manage"><h4>Phần học:</h4><ul id="parts-for-chapter-${chapter.ChapterID}"><div class="spinner-small"></div></ul><button class="btn btn-sm btn-success add-part-btn" style="margin-top:10px;"><i class="fas fa-plus"></i> Thêm Phần Học</button><div class="add-item-form add-part-form-for-chapter-${chapter.ChapterID}" style="margin-top:10px;"><h4>Thêm Phần Học Mới cho "${chapter.ChapterName}"</h4><form class="addPartForm"><input type="hidden" name="chapterId" value="${chapter.ChapterID}"><div class="form-group"><label>Tên Phần Học <span style="color:red;">*</span></label><input type="text" name="partName" placeholder="Tên phần học" required class="form-control"></div><div class="form-group"><label>Upload Tài liệu/Video (Tùy chọn)</label><input type="file" name="partDocumentFile" class="form-control" accept="video/*,application/pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.png"></div><div class="form-actions"><button type="submit" class="btn btn-success btn-sm">Lưu Phần</button><button type="button" class="btn btn-secondary btn-sm cancel-add-btn" style="margin-left:5px;">Hủy</button></div></form></div> <video class="part-video-preview" controls style="display: none; margin-top: 10px; max-width: 100%; height: auto;"></video></div>`;
+
                 div.querySelector('.edit-chapter-btn').addEventListener('click', () => openEditModal('chapter', chapter.ChapterID, null, chapter.ChapterName, chapter.Document));
                 div.querySelector('.delete-chapter-btn').addEventListener('click', () => handleDeleteChapter(chapter.ChapterID, chapter.ChapterName));
                 const addPartBtnEl = div.querySelector('.add-part-btn'); const addPartFormEl = div.querySelector(`.add-part-form-for-chapter-${chapter.ChapterID}`);
                 addPartBtnEl.addEventListener('click', () => { addPartBtnEl.style.display = 'none'; addPartFormEl.classList.add('active'); });
                 addPartFormEl.querySelector('.cancel-add-btn').addEventListener('click', () => { addPartFormEl.classList.remove('active'); addPartBtnEl.style.display = 'inline-block'; addPartFormEl.querySelector('form').reset();});
                 addPartFormEl.querySelector('form').addEventListener('submit', handleAddPartSubmit);
+                const partForm = addPartFormEl.querySelector('form');
+                const fileInput = partForm.querySelector('input[name="partDocumentFile"]');
+                let previewVideo = document.createElement('video');
+                previewVideo.className = 'part-video-preview';
+                previewVideo.controls = true;
+                previewVideo.style.display = 'none';
+                previewVideo.style.marginTop = '10px';
+                previewVideo.style.maxWidth = '100%';
+                previewVideo.style.height = 'auto';
+                fileInput.parentElement.appendChild(previewVideo);
+
+                fileInput.addEventListener('change', function () {
+                    const file = this.files[0];
+                    if (file && file.type.startsWith('video/')) {
+                        const videoURL = URL.createObjectURL(file);
+                        previewVideo.src = videoURL;
+                        previewVideo.style.display = 'block';
+                    } else {
+                        previewVideo.style.display = 'none';
+                        previewVideo.src = '';
+                    }
+                });
+
                 const partsUl = div.querySelector(`#parts-for-chapter-${chapter.ChapterID}`);
                 try { const parts = await apiRequest(`/chapters/${chapter.ChapterID}/parts`); partsUl.innerHTML = ''; if (parts && parts.length > 0) { parts.forEach(part => partsUl.appendChild(createPartElement(part, chapter.ChapterID))); } else { partsUl.innerHTML = '<li>Chương này chưa có phần học.</li>'; } } catch (error) { partsUl.innerHTML = `<li>Lỗi tải phần học: ${error.message}</li>`; }
                 return div;
